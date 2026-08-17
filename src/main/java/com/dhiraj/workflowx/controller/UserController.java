@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.DeleteMapping;
 import com.dhiraj.workflowx.entity.User;
 import com.dhiraj.workflowx.service.UserService;
 
@@ -40,5 +40,10 @@ public class UserController {
      public User updateUser(@PathVariable Long id, @RequestBody User user) {
      user.setId(id);
      return userService.saveUser(user);
+    }
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return "User with ID " + id + " has been deleted.";
     }
 }

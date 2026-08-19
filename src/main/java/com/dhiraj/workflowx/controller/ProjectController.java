@@ -1,7 +1,7 @@
 package com.dhiraj.workflowx.controller;
 
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +31,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Project> getProjectById(@PathVariable Long id) {
+    public Project getProjectById(@PathVariable Long id) {
         return projectService.getProjectById(id);
     }
 

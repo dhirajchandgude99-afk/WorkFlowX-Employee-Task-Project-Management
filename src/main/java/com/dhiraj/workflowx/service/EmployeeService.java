@@ -1,11 +1,11 @@
 package com.dhiraj.workflowx.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.dhiraj.workflowx.entity.Employee;
+import com.dhiraj.workflowx.exception.ResourceNotFoundException;
 import com.dhiraj.workflowx.repository.EmployeeRepository;
 
 @Service
@@ -21,8 +21,14 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
-    public Optional<Employee> getEmployeeById(Long id) {
-        return employeeRepository.findById(id);
+    public Employee getEmployeeById(Long id) {
+
+        return employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Employee not found with id: " + id
+                        )
+                );
     }
 
     public Employee saveEmployee(Employee employee) {

@@ -1,6 +1,9 @@
 package com.dhiraj.workflowx.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 @Entity
@@ -11,24 +14,31 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Task title is required")
     @Column(nullable = false)
     private String title;
 
+    @NotBlank(message = "Task description is required")
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @NotBlank(message = "Task priority is required")
     @Column(nullable = false)
     private String priority;
 
+    @NotBlank(message = "Task status is required")
     @Column(nullable = false)
     private String status;
 
+    @NotNull(message = "Due date is required")
     private LocalDate dueDate;
 
+    @NotNull(message = "Project is required")
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
+    @NotNull(message = "Employee is required")
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;

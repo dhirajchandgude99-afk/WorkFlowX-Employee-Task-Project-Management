@@ -1,7 +1,7 @@
 package com.dhiraj.workflowx.controller;
 
 import java.util.List;
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,11 +33,11 @@ public class UserController {
         return userService.getUserById(id);
     }
     @PostMapping
-     public User createUser(@RequestBody User user) {
+     public User createUser(@Valid @RequestBody User user) {
       return userService.saveUser(user);
     }
     @PutMapping("/{id}")
-     public User updateUser(@PathVariable Long id, @RequestBody User user) {
+     public User updateUser(@PathVariable Long id,@Valid @RequestBody User user) {
      user.setId(id);
      return userService.saveUser(user);
     }

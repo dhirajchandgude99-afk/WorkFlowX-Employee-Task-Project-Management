@@ -2,7 +2,7 @@ package com.dhiraj.workflowx.controller;
 
 import java.util.List;
 
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,13 +36,14 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
+    public Task createTask(@Valid @RequestBody Task task) {
         return taskService.saveTask(task);
     }
 
     @PutMapping("/{id}")
     public Task updateTask(
             @PathVariable Long id,
+            @Valid
             @RequestBody Task task) {
 
         task.setId(id);

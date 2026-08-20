@@ -1,7 +1,7 @@
 package com.dhiraj.workflowx.controller;
 
 import java.util.List;
-
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,13 +36,14 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee) {
+    public Employee createEmployee(@Valid @RequestBody Employee employee) {
         return employeeService.saveEmployee(employee);
     }
 
     @PutMapping("/{id}")
     public Employee updateEmployee(
             @PathVariable Long id,
+            @Valid
             @RequestBody Employee employee) {
 
         employee.setId(id);

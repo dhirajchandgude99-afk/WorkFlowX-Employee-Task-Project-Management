@@ -2,7 +2,7 @@ package com.dhiraj.workflowx.controller;
 
 import java.util.List;
 
-
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,13 +36,14 @@ public class ProjectController {
     }
 
     @PostMapping
-    public Project createProject(@RequestBody Project project) {
+    public Project createProject(@Valid @RequestBody Project project) {
         return projectService.saveProject(project);
     }
 
     @PutMapping("/{id}")
     public Project updateProject(
             @PathVariable Long id,
+            @Valid
             @RequestBody Project project) {
 
         project.setId(id);

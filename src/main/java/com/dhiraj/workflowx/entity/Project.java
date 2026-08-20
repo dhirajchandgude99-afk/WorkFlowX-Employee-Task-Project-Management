@@ -1,28 +1,38 @@
 package com.dhiraj.workflowx.entity;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "projects")
 public class Project {
 
-     @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Project name is required")
     @Column(nullable = false)
     private String name;
 
+    @NotBlank(message = "Description is required")
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @NotNull(message = "Start date is required")
     private LocalDate startDate;
 
+    @NotNull(message = "End date is required")
     private LocalDate endDate;
 
+    @NotBlank(message = "Status is required")
     @Column(nullable = false)
     private String status;
 
+    @NotNull(message = "Manager is required")
     @ManyToOne
     @JoinColumn(name = "manager_id", nullable = false)
     private Employee manager;

@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dhiraj.workflowx.dto.UserResponseDTO;
 import com.dhiraj.workflowx.entity.User;
 import com.dhiraj.workflowx.exception.ResourceNotFoundException;
+import com.dhiraj.workflowx.mapper.UserMapper;
 import com.dhiraj.workflowx.repository.UserRepository;
 
 @Service
@@ -17,18 +19,24 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toDTO)
+                .toList();
     }
 
-    public User getUserById(Long id) {
+    public UserResponseDTO getUserById(Long id) {
 
-        return userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "User not found with id: " + id
+                                "User with ID " + id + " not found"
                         )
                 );
+
+        return UserMapper.toDTO(user);
     }
 
     public User saveUser(User user) {
@@ -37,12 +45,13 @@ public class UserService {
 
     public void deleteUser(Long id) {
 
-    if (!userRepository.existsById(id)) {
-        throw new ResourceNotFoundException(
-                "User not found with id: " + id
-        );
-             }
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User with ID " + id + " not found"
+                        )
+                );
 
-     userRepository.deleteById(id);
+        userRepository.delete(user);
     }
 }

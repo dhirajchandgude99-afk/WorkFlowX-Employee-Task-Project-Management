@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dhiraj.workflowx.dto.ProjectResponseDTO;
 import com.dhiraj.workflowx.entity.Project;
 import com.dhiraj.workflowx.exception.ResourceNotFoundException;
+import com.dhiraj.workflowx.mapper.ProjectMapper;
 import com.dhiraj.workflowx.repository.ProjectRepository;
 
 @Service
@@ -17,18 +19,24 @@ public class ProjectService {
         this.projectRepository = projectRepository;
     }
 
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+    public List<ProjectResponseDTO> getAllProjects() {
+
+        return projectRepository.findAll()
+                .stream()
+                .map(ProjectMapper::toDTO)
+                .toList();
     }
 
-    public Project getProjectById(Long id) {
+    public ProjectResponseDTO getProjectById(Long id) {
 
-        return projectRepository.findById(id)
+        Project project = projectRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "Project not found with id: " + id
+                                "Project with ID " + id + " not found"
                         )
                 );
+
+        return ProjectMapper.toDTO(project);
     }
 
     public Project saveProject(Project project) {
@@ -37,12 +45,13 @@ public class ProjectService {
 
     public void deleteProject(Long id) {
 
-    if (!projectRepository.existsById(id)) {
-        throw new ResourceNotFoundException(
-                "Project not found with id: " + id
-        );
-     }
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Project with ID " + id + " not found"
+                        )
+                );
 
-     projectRepository.deleteById(id);
+        projectRepository.delete(project);
     }
 }

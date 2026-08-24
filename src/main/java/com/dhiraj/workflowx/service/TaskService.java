@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dhiraj.workflowx.dto.TaskResponseDTO;
 import com.dhiraj.workflowx.entity.Task;
 import com.dhiraj.workflowx.exception.ResourceNotFoundException;
+import com.dhiraj.workflowx.mapper.TaskMapper;
 import com.dhiraj.workflowx.repository.TaskRepository;
 
 @Service
@@ -17,18 +19,24 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<TaskResponseDTO> getAllTasks() {
+
+        return taskRepository.findAll()
+                .stream()
+                .map(TaskMapper::toDTO)
+                .toList();
     }
 
-    public Task getTaskById(Long id) {
+    public TaskResponseDTO getTaskById(Long id) {
 
-        return taskRepository.findById(id)
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "Task not found with id: " + id
+                                "Task with ID " + id + " not found"
                         )
                 );
+
+        return TaskMapper.toDTO(task);
     }
 
     public Task saveTask(Task task) {
@@ -37,12 +45,13 @@ public class TaskService {
 
     public void deleteTask(Long id) {
 
-    if (!taskRepository.existsById(id)) {
-        throw new ResourceNotFoundException(
-                "Task not found with id: " + id
-        );
-    }
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Task with ID " + id + " not found"
+                        )
+                );
 
-    taskRepository.deleteById(id);
+        taskRepository.delete(task);
     }
 }

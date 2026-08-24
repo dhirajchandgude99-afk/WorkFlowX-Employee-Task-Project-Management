@@ -1,7 +1,6 @@
 package com.dhiraj.workflowx.controller;
 
 import java.util.List;
-import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dhiraj.workflowx.dto.EmployeeResponseDTO;
 import com.dhiraj.workflowx.entity.Employee;
 import com.dhiraj.workflowx.service.EmployeeService;
 
@@ -26,33 +26,40 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<Employee> getAllEmployees() {
+    public List<EmployeeResponseDTO> getAllEmployees() {
         return employeeService.getAllEmployees();
     }
 
     @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable Long id) {
+    public EmployeeResponseDTO getEmployeeById(
+            @PathVariable Long id) {
+
         return employeeService.getEmployeeById(id);
     }
 
     @PostMapping
-    public Employee createEmployee(@Valid @RequestBody Employee employee) {
+    public Employee createEmployee(
+            @RequestBody Employee employee) {
+
         return employeeService.saveEmployee(employee);
     }
 
     @PutMapping("/{id}")
     public Employee updateEmployee(
             @PathVariable Long id,
-            @Valid
             @RequestBody Employee employee) {
 
         employee.setId(id);
+
         return employeeService.saveEmployee(employee);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteEmployee(@PathVariable Long id) {
+    public String deleteEmployee(
+            @PathVariable Long id) {
+
         employeeService.deleteEmployee(id);
+
         return "Employee deleted successfully";
     }
 }

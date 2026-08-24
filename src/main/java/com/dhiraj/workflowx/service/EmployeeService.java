@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dhiraj.workflowx.dto.EmployeeResponseDTO;
 import com.dhiraj.workflowx.entity.Employee;
 import com.dhiraj.workflowx.exception.ResourceNotFoundException;
+import com.dhiraj.workflowx.mapper.EmployeeMapper;
 import com.dhiraj.workflowx.repository.EmployeeRepository;
 
 @Service
@@ -17,18 +19,24 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public List<EmployeeResponseDTO> getAllEmployees() {
+
+        return employeeRepository.findAll()
+                .stream()
+                .map(EmployeeMapper::toDTO)
+                .toList();
     }
 
-    public Employee getEmployeeById(Long id) {
+    public EmployeeResponseDTO getEmployeeById(Long id) {
 
-        return employeeRepository.findById(id)
+        Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "Employee not found with id: " + id
+                                "Employee with ID " + id + " not found"
                         )
                 );
+
+        return EmployeeMapper.toDTO(employee);
     }
 
     public Employee saveEmployee(Employee employee) {
@@ -37,12 +45,13 @@ public class EmployeeService {
 
     public void deleteEmployee(Long id) {
 
-    if (!employeeRepository.existsById(id)) {
-        throw new ResourceNotFoundException(
-                "Employee not found with id: " + id
-        );
-      }
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Employee with ID " + id + " not found"
+                        )
+                );
 
-      employeeRepository.deleteById(id);
+        employeeRepository.delete(employee);
     }
 }

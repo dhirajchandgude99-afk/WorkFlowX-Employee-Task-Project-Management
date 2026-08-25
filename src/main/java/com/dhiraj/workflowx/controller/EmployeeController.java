@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dhiraj.workflowx.dto.EmployeeRequestDTO;
 import com.dhiraj.workflowx.dto.EmployeeResponseDTO;
-import com.dhiraj.workflowx.entity.Employee;
 import com.dhiraj.workflowx.service.EmployeeService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -38,20 +40,18 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public Employee createEmployee(
-            @RequestBody Employee employee) {
+    public EmployeeResponseDTO createEmployee(
+            @Valid @RequestBody EmployeeRequestDTO request) {
 
-        return employeeService.saveEmployee(employee);
+        return employeeService.createEmployee(request);
     }
 
     @PutMapping("/{id}")
-    public Employee updateEmployee(
+    public EmployeeResponseDTO updateEmployee(
             @PathVariable Long id,
-            @RequestBody Employee employee) {
+            @Valid @RequestBody EmployeeRequestDTO request) {
 
-        employee.setId(id);
-
-        return employeeService.saveEmployee(employee);
+        return employeeService.updateEmployee(id, request);
     }
 
     @DeleteMapping("/{id}")

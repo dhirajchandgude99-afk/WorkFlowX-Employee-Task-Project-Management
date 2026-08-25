@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dhiraj.workflowx.dto.UserRequestDTO;
 import com.dhiraj.workflowx.dto.UserResponseDTO;
 import com.dhiraj.workflowx.entity.User;
 import com.dhiraj.workflowx.exception.ResourceNotFoundException;
@@ -39,8 +40,31 @@ public class UserService {
         return UserMapper.toDTO(user);
     }
 
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public UserResponseDTO createUser(UserRequestDTO request) {
+
+        User user = UserMapper.toEntity(request);
+
+        User savedUser = userRepository.save(user);
+
+        return UserMapper.toDTO(savedUser);
+    }
+
+    public UserResponseDTO updateUser(Long id, UserRequestDTO request) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User with ID " + id + " not found"
+                        )
+                );
+
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setRole(request.getRole());
+
+        User updatedUser = userRepository.save(user);
+
+        return UserMapper.toDTO(updatedUser);
     }
 
     public void deleteUser(Long id) {

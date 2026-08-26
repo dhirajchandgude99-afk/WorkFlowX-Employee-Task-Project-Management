@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dhiraj.workflowx.dto.TaskRequestDTO;
 import com.dhiraj.workflowx.dto.TaskResponseDTO;
-import com.dhiraj.workflowx.entity.Task;
 import com.dhiraj.workflowx.service.TaskService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -38,20 +40,18 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(
-            @RequestBody Task task) {
+    public TaskResponseDTO createTask(
+            @Valid @RequestBody TaskRequestDTO request) {
 
-        return taskService.saveTask(task);
+        return taskService.createTask(request);
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(
+    public TaskResponseDTO updateTask(
             @PathVariable Long id,
-            @RequestBody Task task) {
+            @Valid @RequestBody TaskRequestDTO request) {
 
-        task.setId(id);
-
-        return taskService.saveTask(task);
+        return taskService.updateTask(id, request);
     }
 
     @DeleteMapping("/{id}")

@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dhiraj.workflowx.dto.ProjectRequestDTO;
 import com.dhiraj.workflowx.dto.ProjectResponseDTO;
-import com.dhiraj.workflowx.entity.Project;
 import com.dhiraj.workflowx.service.ProjectService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -38,20 +40,18 @@ public class ProjectController {
     }
 
     @PostMapping
-    public Project createProject(
-            @RequestBody Project project) {
+    public ProjectResponseDTO createProject(
+            @Valid @RequestBody ProjectRequestDTO request) {
 
-        return projectService.saveProject(project);
+        return projectService.createProject(request);
     }
 
     @PutMapping("/{id}")
-    public Project updateProject(
+    public ProjectResponseDTO updateProject(
             @PathVariable Long id,
-            @RequestBody Project project) {
+            @Valid @RequestBody ProjectRequestDTO request) {
 
-        project.setId(id);
-
-        return projectService.saveProject(project);
+        return projectService.updateProject(id, request);
     }
 
     @DeleteMapping("/{id}")

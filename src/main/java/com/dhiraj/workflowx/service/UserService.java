@@ -3,7 +3,7 @@ package com.dhiraj.workflowx.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.dhiraj.workflowx.dto.UserRequestDTO;
 import com.dhiraj.workflowx.dto.UserResponseDTO;
 import com.dhiraj.workflowx.entity.User;
@@ -15,9 +15,14 @@ import com.dhiraj.workflowx.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(
+        UserRepository userRepository,
+        PasswordEncoder passwordEncoder) {
+
+    this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserResponseDTO> getAllUsers() {
@@ -42,11 +47,15 @@ public class UserService {
 
     public UserResponseDTO createUser(UserRequestDTO request) {
 
-        User user = UserMapper.toEntity(request);
+    User user = UserMapper.toEntity(request);
 
-        User savedUser = userRepository.save(user);
+    user.setPassword(
+            passwordEncoder.encode(request.getPassword())
+    );
 
-        return UserMapper.toDTO(savedUser);
+    User savedUser = userRepository.save(user);
+
+    return UserMapper.toDTO(savedUser);
     }
 
     public UserResponseDTO updateUser(Long id, UserRequestDTO request) {

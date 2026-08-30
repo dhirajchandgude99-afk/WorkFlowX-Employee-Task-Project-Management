@@ -68,7 +68,8 @@ public class UserService {
                 );
 
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
+        user.setPassword(
+        passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
         User updatedUser = userRepository.save(user);

@@ -37,13 +37,21 @@ public class SecurityConfig {
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .authorizeHttpRequests(auth -> auth
+
+                 // Public APIs
                 .requestMatchers(
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/api/auth/login"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
+                 "/swagger-ui/**",
+                 "/v3/api-docs/**",
+                  "/api/auth/login"
+                 ).permitAll()
+
+               // ADMIN-only APIs
+               .requestMatchers("/api/users/**")
+               .hasRole("ADMIN")
+
+               // All other APIs require authentication
+              .anyRequest().authenticated()
+             )
             .addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class

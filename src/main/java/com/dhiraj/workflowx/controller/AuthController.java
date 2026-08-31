@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dhiraj.workflowx.dto.LoginRequestDTO;
 import com.dhiraj.workflowx.dto.LoginResponseDTO;
+import com.dhiraj.workflowx.security.JwtService;
 
 import jakarta.validation.Valid;
 
@@ -19,9 +20,14 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(
+            AuthenticationManager authenticationManager,
+            JwtService jwtService) {
+
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")
@@ -36,9 +42,15 @@ public class AuthController {
                         )
                 );
 
+        String token = jwtService.generateToken(
+                (org.springframework.security.core.userdetails.UserDetails)
+                        authentication.getPrincipal()
+        );
+
         return new LoginResponseDTO(
                 "Login successful",
-                authentication.getName()
+                authentication.getName(),
+                token
         );
     }
 }

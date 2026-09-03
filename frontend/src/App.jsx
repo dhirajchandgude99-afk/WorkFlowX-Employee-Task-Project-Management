@@ -1,12 +1,7 @@
-import './App.css'
+import AppRoutes from './routes/AppRoutes'
 
 function App() {
-  return (
-    <div className="app">
-      <h1>WorkflowX</h1>
-      <p>Employee Task & Project Management System</p>
-    </div>
-  )
+  return <AppRoutes />
 }
 
 export default App

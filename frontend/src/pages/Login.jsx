@@ -1,30 +1,56 @@
 import { useState } from 'react'
 import './Login.css'
+import { loginUser } from '../services/api'
 
 function Login() {
 const [showPassword, setShowPassword] = useState(false)
 const [username, setUsername] = useState('')
 const [password, setPassword] = useState('')
+const [error, setError] = useState('')
 
-const handleSubmit = (e) => {
-  e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
-  console.log('Username:', username)
-  console.log('Password:', password)
-}
-return ( <div className="login-page"> <div className="login-card"> <h1>WorkflowX</h1> <p>Employee Task & Project Management System</p>
+    if (!username.trim()) {
+     setError('Username is required')
+     return
+    }
 
+    if (!password.trim()) {
+      setError('Password is required')
+      return
+    }
+
+   setError('')
+
+    try {
+     const response = await loginUser(username, password)
+     console.log('Login response:', response)
+    } 
+    catch (error) {
+      console.error('Login failed:', error)
+      setError('Unable to connect to server')
+    }
+  }
+
+  return ( <div className="login-page"> 
+  <div className="login-card"> 
+   <h1>WorkflowX</h1> <p>Employee Task & Project Management System</p>
+     {error && <p className="login-error">{error}</p>}
     <form onSubmit={handleSubmit}>
       <div className="form-group">
         <label htmlFor="username">Username</label>
         <input
-          type="text"
-          id="username"
-          name="username"
-          placeholder="Enter username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+         type="text"
+         id="username"
+         name="username"
+         placeholder="Enter username"
+         value={username}
+         onChange={(e) => {
+         setUsername(e.target.value)
+         setError('')
+        }}
+      />
       </div>
 
       <div className="form-group">
@@ -37,7 +63,10 @@ return ( <div className="login-page"> <div className="login-card"> <h1>WorkflowX
             name="password"
             placeholder="Enter password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value)
+              setError('')
+            }}
           />
 
           <button

@@ -1,9 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Login.css'
 import { loginUser } from '../services/api'
+import { getToken, saveToken } from '../utils/auth'
 
 function Login() {
-const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (getToken()) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [navigate])
+
+  const [showPassword, setShowPassword] = useState(false)
 const [username, setUsername] = useState('')
 const [password, setPassword] = useState('')
 const [error, setError] = useState('')
@@ -24,8 +34,15 @@ const [error, setError] = useState('')
    setError('')
 
     try {
-     const response = await loginUser(username, password)
-     console.log('Login response:', response)
+      const response = await loginUser(username, password)
+
+      console.log('Response:', response)
+      console.log('Token:', response.data.token)
+
+      if (response.status === 200) {
+  saveToken(response.data.token)
+  navigate('/dashboard')
+}
     } 
     catch (error) {
       console.error('Login failed:', error)

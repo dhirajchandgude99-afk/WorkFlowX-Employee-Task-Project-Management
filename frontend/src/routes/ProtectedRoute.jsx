@@ -1,12 +1,12 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import { isLoggedIn } from '../utils/auth'
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute() {
   if (!isLoggedIn()) {
     return <Navigate to="/login" replace />
   }
 
-  return children
+  return <Outlet />
 }
 
 export default ProtectedRoute

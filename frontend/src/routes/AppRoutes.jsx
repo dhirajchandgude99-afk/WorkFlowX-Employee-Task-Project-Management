@@ -7,18 +7,44 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* Public Routes */}
+
         <Route path="/" element={<h1>WorkflowX Home</h1>} />
 
         <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+        {/* Protected Routes */}
+
+        <Route element={<ProtectedRoute />}>
+
+          <Route
+            path="/dashboard"
+            element={<Dashboard />}
+          />
+
+          <Route
+            path="/users"
+            element={<h1>Users</h1>}
+          />
+
+          <Route
+            path="/employees"
+            element={<h1>Employees</h1>}
+          />
+
+          <Route
+            path="/projects"
+            element={<h1>Projects</h1>}
+          />
+
+          <Route
+            path="/tasks"
+            element={<h1>Tasks</h1>}
+          />
+
+        </Route>
+
       </Routes>
     </BrowserRouter>
   )

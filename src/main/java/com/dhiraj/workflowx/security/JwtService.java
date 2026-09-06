@@ -27,14 +27,21 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
 
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date())
-                .expiration(
-                        new Date(System.currentTimeMillis() + 1000 * 60 * 60)
-                )
-                .signWith(getSigningKey())
-                .compact();
+         String role = userDetails.getAuthorities()
+            .stream()
+            .findFirst()
+            .map(authority -> authority.getAuthority().replace("ROLE_", ""))
+            .orElse("USER");
+
+         return Jwts.builder()
+            .subject(userDetails.getUsername())
+            .claim("role", role)
+            .issuedAt(new Date())
+            .expiration(
+                    new Date(System.currentTimeMillis() + 1000 * 60 * 60)
+            )
+            .signWith(getSigningKey())
+            .compact();
     }
 
     public String extractUsername(String token) {

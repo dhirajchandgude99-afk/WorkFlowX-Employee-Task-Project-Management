@@ -1,20 +1,20 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+import Login from '../pages/Login'
+import Dashboard from '../pages/Dashboard'
 import Users from '../pages/Users'
 import Employees from '../pages/Employees'
 import Projects from '../pages/Projects'
 import Tasks from '../pages/Tasks'
-import Login from '../pages/Login'
-import Dashboard from '../pages/Dashboard'
+
 import ProtectedRoute from './ProtectedRoute'
+import RoleProtectedRoute from './RoleProtectedRoute'
 import MainLayout from '../layouts/MainLayout'
 
 function AppRoutes() {
   return (
     <BrowserRouter>
-
       <Routes>
-
-        {/* Public Routes */}
 
         <Route
           path="/"
@@ -26,10 +26,7 @@ function AppRoutes() {
           element={<Login />}
         />
 
-        {/* Protected Routes */}
-
         <Route element={<ProtectedRoute />}>
-
           <Route element={<MainLayout />}>
 
             <Route
@@ -37,14 +34,16 @@ function AppRoutes() {
               element={<Dashboard />}
             />
 
-            <Route
-              path="/users"
-              element={<Users />}
-            />
+            <Route element={<RoleProtectedRoute role="ADMIN" />}>
+              <Route
+                path="/users"
+                element={<Users />}
+              />
+            </Route>
 
             <Route
-             path="/employees"
-             element={<Employees />}
+              path="/employees"
+              element={<Employees />}
             />
 
             <Route
@@ -58,11 +57,9 @@ function AppRoutes() {
             />
 
           </Route>
-
         </Route>
 
       </Routes>
-
     </BrowserRouter>
   )
 }

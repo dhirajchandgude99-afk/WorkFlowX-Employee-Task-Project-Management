@@ -1,10 +1,12 @@
 import { NavLink } from 'react-router-dom'
+import { isAdmin } from '../utils/auth'
 import './Sidebar.css'
 
 function Sidebar() {
+  const admin = isAdmin()
+
   return (
     <aside className="sidebar">
-
       <div className="sidebar-menu">
 
         <NavLink
@@ -14,12 +16,14 @@ function Sidebar() {
           Dashboard
         </NavLink>
 
-        <NavLink
-          to="/users"
-          className="sidebar-link"
-        >
-          Users
-        </NavLink>
+        {admin && (
+          <NavLink
+            to="/users"
+            className="sidebar-link"
+          >
+            Users
+          </NavLink>
+        )}
 
         <NavLink
           to="/employees"
@@ -43,7 +47,6 @@ function Sidebar() {
         </NavLink>
 
       </div>
-
     </aside>
   )
 }

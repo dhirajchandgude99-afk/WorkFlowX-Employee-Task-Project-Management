@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
+import Users from '../pages/Users'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 import ProtectedRoute from './ProtectedRoute'
@@ -36,7 +36,7 @@ function AppRoutes() {
 
             <Route
               path="/users"
-              element={<h1>Users</h1>}
+              element={<Users />}
             />
 
             <Route

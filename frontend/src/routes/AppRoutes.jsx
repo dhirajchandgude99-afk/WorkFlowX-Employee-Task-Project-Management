@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Users from '../pages/Users'
 import Employees from '../pages/Employees'
 import Projects from '../pages/Projects'
+import Tasks from '../pages/Tasks'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 import ProtectedRoute from './ProtectedRoute'
@@ -53,7 +54,7 @@ function AppRoutes() {
 
             <Route
               path="/tasks"
-              element={<h1>Tasks</h1>}
+              element={<Tasks />}
             />
 
           </Route>

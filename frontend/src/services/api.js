@@ -14,7 +14,24 @@ export const loginUser = async (username, password) => {
     }),
   })
 
-  const data = await response.json()
+  let data = null
+
+  const contentType = response.headers.get('content-type')
+
+  if (contentType && contentType.includes('application/json')) {
+    data = await response.json()
+  }
+
+  if (!response.ok) {
+    const error = new Error(
+      data?.message || `Request failed with status ${response.status}`
+    )
+
+    error.status = response.status
+    error.data = data
+
+    throw error
+  }
 
   return {
     status: response.status,
@@ -30,10 +47,12 @@ export const authFetch = async (url, options = {}) => {
     Authorization: `Bearer ${token}`,
   }
 
-  return fetch(`${API_BASE_URL}${url}`, {
+  const response = await fetch(`${API_BASE_URL}${url}`, {
     ...options,
     headers,
   })
+
+  return response
 }
 
 export default API_BASE_URL

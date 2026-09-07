@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import EmptyState from '../components/EmptyState'
 import './Tasks.css'
 
 function Tasks() {
@@ -167,12 +168,12 @@ function Tasks() {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="empty-tasks"
-                  >
-                    No tasks found
-                  </td>
+                  <td colSpan="7">
+                    <EmptyState
+                     title="No tasks found"
+                     message="No tasks match your search."
+                    />
+                 </td>
                 </tr>
               )}
             </tbody>

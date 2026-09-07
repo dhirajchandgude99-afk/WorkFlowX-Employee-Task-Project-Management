@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import EmptyState from '../components/EmptyState'
 import './Employees.css'
 
 function Employees() {
@@ -173,7 +174,10 @@ function Employees() {
                     colSpan="6"
                     className="empty-employees"
                   >
-                    No employees found
+                    <EmptyState
+                      title="No employees found"
+                      message="No employees match your search."
+                    />
                   </td>
 
                 </tr>

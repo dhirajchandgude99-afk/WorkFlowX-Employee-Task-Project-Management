@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import EmptyState from '../components/EmptyState'
 import './Users.css'
 
 function Users() {
@@ -129,7 +130,10 @@ function Users() {
                     colSpan="4"
                     className="empty-users"
                   >
-                    No users found
+                    <EmptyState
+                    title="No users found"
+                     message="No users match your search."
+                      />
                   </td>
                 </tr>
               )}

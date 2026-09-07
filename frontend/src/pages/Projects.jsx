@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './Projects.css'
+import EmptyState from '../components/EmptyState'
 
 function Projects() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -134,11 +135,11 @@ function Projects() {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan="6"
-                    className="empty-projects"
-                  >
-                    No projects found
+                  <td colSpan="6">
+                  <EmptyState
+                  title="No projects found"
+                  message="No projects match your search."
+                  />
                   </td>
                 </tr>
               )}

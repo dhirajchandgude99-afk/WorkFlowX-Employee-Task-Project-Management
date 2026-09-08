@@ -1,185 +1,337 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import EmptyState from '../components/EmptyState'
+import Loading from '../components/Loading'
+import ErrorMessage from '../components/ErrorMessage'
+import {
+  getTasks,
+  deleteTask,
+} from '../services/api'
 import './Tasks.css'
 
 function Tasks() {
+  const [tasks, setTasks] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
 
-  const tasks = [
-    {
-      id: 1,
-      name: 'Implement JWT Authentication',
-      employee: 'John Doe',
-      project: 'WorkflowX Development',
-      priority: 'High',
-      status: 'Completed',
-      dueDate: '2026-05-15',
-    },
-    {
-      id: 2,
-      name: 'Build Employee Management UI',
-      employee: 'Amit Kulkarni',
-      project: 'WorkflowX Development',
-      priority: 'High',
-      status: 'In Progress',
-      dueDate: '2026-05-25',
-    },
-    {
-      id: 3,
-      name: 'Design Project Dashboard',
-      employee: 'Priya Sharma',
-      project: 'Project Management Portal',
-      priority: 'Medium',
-      status: 'In Progress',
-      dueDate: '2026-06-05',
-    },
-    {
-      id: 4,
-      name: 'Create Database Schema',
-      employee: 'Rahul Patil',
-      project: 'Mobile Application',
-      priority: 'High',
-      status: 'Pending',
-      dueDate: '2026-07-10',
-    },
-    {
-      id: 5,
-      name: 'Prepare Application Documentation',
-      employee: 'Sneha Joshi',
-      project: 'Employee Management System',
-      priority: 'Low',
-      status: 'Pending',
-      dueDate: '2026-07-20',
-    },
-    {
-      id: 6,
-      name: 'Test REST API Endpoints',
-      employee: 'John Doe',
-      project: 'WorkflowX Development',
-      priority: 'Medium',
-      status: 'Completed',
-      dueDate: '2026-05-20',
-    },
-  ]
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const fetchTasks = async () => {
+    try {
+      setLoading(true)
+      setError('')
+
+      const data = await getTasks()
+
+      setTasks(data || [])
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error)
+
+      if (error.status === 401 || error.status === 403) {
+        setError(
+          'You are not authorized to view tasks.'
+        )
+      } else {
+        setError(
+          error.message || 'Failed to load tasks.'
+        )
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchTasks()
+  }, [])
+
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this task?'
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setError('')
+
+      await deleteTask(id)
+
+      setTasks((currentTasks) =>
+        currentTasks.filter(
+          (task) => task.id !== id
+        )
+      )
+    } catch (error) {
+      console.error('Failed to delete task:', error)
+
+      if (error.status === 403) {
+        setError(
+          'You are not authorized to delete this task.'
+        )
+      } else if (error.status === 404) {
+        setError('Task was not found.')
+      } else {
+        setError(
+          error.message || 'Failed to delete task.'
+        )
+      }
+    }
+  }
 
   const filteredTasks = tasks.filter((task) => {
     const search = searchTerm.toLowerCase()
 
     return (
-      task.name.toLowerCase().includes(search) ||
-      task.employee.toLowerCase().includes(search) ||
-      task.project.toLowerCase().includes(search) ||
-      task.priority.toLowerCase().includes(search) ||
-      task.status.toLowerCase().includes(search)
+      task.title?.toLowerCase().includes(search) ||
+      task.description?.toLowerCase().includes(search) ||
+      task.priority?.toLowerCase().includes(search) ||
+      task.status?.toLowerCase().includes(search) ||
+      String(task.employeeId ?? '').includes(search) ||
+      String(task.projectId ?? '').includes(search)
     )
   })
 
+  const formatPriority = (priority) => {
+    if (!priority) {
+      return '-'
+    }
+
+    return priority
+      .toLowerCase()
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (letter) =>
+        letter.toUpperCase()
+      )
+  }
+
+  const formatStatus = (status) => {
+    if (!status) {
+      return '-'
+    }
+
+    return status
+      .toLowerCase()
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (letter) =>
+        letter.toUpperCase()
+      )
+  }
+
+  const getPriorityClass = (priority) => {
+    const normalizedPriority =
+      priority?.toLowerCase()
+
+    return `priority-${normalizedPriority || 'default'}`
+  }
+
+  const getStatusClass = (status) => {
+    const normalizedStatus =
+      status?.toLowerCase()
+
+    if (
+      normalizedStatus === 'completed'
+    ) {
+      return 'task-status-completed'
+    }
+
+    if (
+      normalizedStatus === 'in_progress' ||
+      normalizedStatus === 'in progress'
+    ) {
+      return 'task-status-in-progress'
+    }
+
+    return 'task-status-pending'
+  }
+
   return (
     <div className="tasks-page">
+
+      {/* Header */}
+
       <div className="tasks-header">
+
         <div>
           <h1>Tasks</h1>
           <p>Manage WorkflowX tasks</p>
         </div>
 
-        <button className="add-task-button">
+        <button
+          className="add-task-button"
+          onClick={() => {
+            alert(
+              'Add Task functionality will be added later.'
+            )
+          }}
+        >
           + Add Task
         </button>
+
       </div>
 
+      {/* Error */}
+
+      {error && (
+        <ErrorMessage
+          message={error}
+          onRetry={fetchTasks}
+        />
+      )}
+
+      {/* Search */}
+
       <div className="tasks-toolbar">
+
         <input
           type="text"
           placeholder="Search tasks..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) =>
+            setSearchTerm(e.target.value)
+          }
         />
+
       </div>
+
+      {/* Task Table */}
 
       <div className="tasks-card">
-        <div className="table-container">
-          <table className="tasks-table">
-            <thead>
-              <tr>
-                <th>Task Name</th>
-                <th>Assigned Employee</th>
-                <th>Project</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Due Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
 
-            <tbody>
-              {filteredTasks.length > 0 ? (
-                filteredTasks.map((task) => (
-                  <tr key={task.id}>
-                    <td className="task-name">
-                      {task.name}
-                    </td>
+        {loading ? (
+          <Loading message="Loading tasks..." />
+        ) : (
+          <div className="table-container">
 
-                    <td>
-                      {task.employee}
-                    </td>
+            <table className="tasks-table">
 
-                    <td>
-                      {task.project}
-                    </td>
+              <thead>
 
-                    <td>
-                      <span
-                        className={`priority-badge priority-${task.priority.toLowerCase()}`}
-                      >
-                        {task.priority}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span
-                        className={`task-status ${
-                          task.status === 'Completed'
-                            ? 'task-status-completed'
-                            : task.status === 'In Progress'
-                            ? 'task-status-in-progress'
-                            : 'task-status-pending'
-                        }`}
-                      >
-                        {task.status}
-                      </span>
-                    </td>
-
-                    <td>
-                      {task.dueDate}
-                    </td>
-
-                    <td>
-                      <div className="task-actions">
-                        <button className="edit-task-button">
-                          Edit
-                        </button>
-
-                        <button className="delete-task-button">
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
                 <tr>
-                  <td colSpan="7">
-                    <EmptyState
-                     title="No tasks found"
-                     message="No tasks match your search."
-                    />
-                 </td>
+                  <th>Task Name</th>
+                  <th>Assigned Employee ID</th>
+                  <th>Project ID</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+
+              </thead>
+
+              <tbody>
+
+                {filteredTasks.length > 0 ? (
+                  filteredTasks.map((task) => (
+                    <tr key={task.id}>
+
+                      <td className="task-name">
+                        {task.title}
+                      </td>
+
+                      <td>
+                        {task.employeeId ?? '-'}
+                      </td>
+
+                      <td>
+                        {task.projectId ?? '-'}
+                      </td>
+
+                      <td>
+
+                        <span
+                          className={`priority-badge ${getPriorityClass(
+                            task.priority
+                          )}`}
+                        >
+                          {formatPriority(
+                            task.priority
+                          )}
+                        </span>
+
+                      </td>
+
+                      <td>
+
+                        <span
+                          className={`task-status ${getStatusClass(
+                            task.status
+                          )}`}
+                        >
+                          {formatStatus(
+                            task.status
+                          )}
+                        </span>
+
+                      </td>
+
+                      <td>
+                        {task.dueDate || '-'}
+                      </td>
+
+                      <td>
+
+                        <div className="task-actions">
+
+                          <button
+                            className="edit-task-button"
+                            onClick={() => {
+                              alert(
+                                'Edit Task functionality will be added later.'
+                              )
+                            }}
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            className="delete-task-button"
+                            onClick={() =>
+                              handleDelete(task.id)
+                            }
+                          >
+                            Delete
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+
+                    <td colSpan="7">
+
+                      <EmptyState
+                        title={
+                          searchTerm
+                            ? 'No tasks found'
+                            : 'No tasks available'
+                        }
+                        message={
+                          searchTerm
+                            ? 'No tasks match your search.'
+                            : 'There are currently no tasks.'
+                        }
+                      />
+
+                    </td>
+
+                  </tr>
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
+        )}
+
       </div>
+
     </div>
   )
 }

@@ -1,61 +1,91 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import EmptyState from '../components/EmptyState'
+import Loading from '../components/Loading'
+import ErrorMessage from '../components/ErrorMessage'
+import {
+  getEmployees,
+  deleteEmployee,
+} from '../services/api'
 import './Employees.css'
 
 function Employees() {
+  const [employees, setEmployees] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
 
-  const employees = [
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john.doe@workflowx.com',
-      department: 'IT',
-      designation: 'Software Developer',
-      status: 'Active',
-    },
-    {
-      id: 2,
-      name: 'Priya Sharma',
-      email: 'priya.sharma@workflowx.com',
-      department: 'HR',
-      designation: 'HR Manager',
-      status: 'Active',
-    },
-    {
-      id: 3,
-      name: 'Rahul Patil',
-      email: 'rahul.patil@workflowx.com',
-      department: 'Finance',
-      designation: 'Accountant',
-      status: 'Active',
-    },
-    {
-      id: 4,
-      name: 'Sneha Joshi',
-      email: 'sneha.joshi@workflowx.com',
-      department: 'Marketing',
-      designation: 'Marketing Executive',
-      status: 'Inactive',
-    },
-    {
-      id: 5,
-      name: 'Amit Kulkarni',
-      email: 'amit.kulkarni@workflowx.com',
-      department: 'IT',
-      designation: 'Backend Developer',
-      status: 'Active',
-    },
-  ]
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const fetchEmployees = async () => {
+    try {
+      setLoading(true)
+      setError('')
+
+      const data = await getEmployees()
+
+      setEmployees(data || [])
+    } catch (error) {
+      console.error('Failed to fetch employees:', error)
+
+      if (error.status === 401 || error.status === 403) {
+        setError('You are not authorized to view employees.')
+      } else {
+        setError(
+          error.message || 'Failed to load employees.'
+        )
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchEmployees()
+  }, [])
+
+  const handleDelete = async (id) => {
+  const confirmed = window.confirm(
+    'Are you sure you want to delete this employee?'
+  )
+
+  if (!confirmed) {
+    return
+  }
+
+  try {
+    setError('')
+
+    await deleteEmployee(id)
+
+    setEmployees((currentEmployees) =>
+      currentEmployees.filter(
+        (employee) => employee.id !== id
+      )
+    )
+  } catch (error) {
+    console.error('Failed to delete employee:', error)
+
+    if (error.status === 403) {
+      setError(
+        'Employee cannot be deleted because this employee is assigned to existing projects or tasks.'
+      )
+    } else if (error.status === 404) {
+      setError('Employee was not found.')
+    } else {
+      setError(
+        error.message || 'Failed to delete employee.'
+      )
+      }
+    }
+  }
 
   const filteredEmployees = employees.filter((employee) => {
     const search = searchTerm.toLowerCase()
 
     return (
-      employee.name.toLowerCase().includes(search) ||
-      employee.email.toLowerCase().includes(search) ||
-      employee.department.toLowerCase().includes(search) ||
-      employee.designation.toLowerCase().includes(search)
+      employee.name?.toLowerCase().includes(search) ||
+      employee.email?.toLowerCase().includes(search) ||
+      employee.department?.toLowerCase().includes(search) ||
+      employee.designation?.toLowerCase().includes(search)
     )
   })
 
@@ -71,11 +101,25 @@ function Employees() {
           <p>Manage WorkflowX employees</p>
         </div>
 
-        <button className="add-employee-button">
+        <button
+          className="add-employee-button"
+          onClick={() => {
+            alert('Add Employee functionality will be added later.')
+          }}
+        >
           + Add Employee
         </button>
 
       </div>
+
+      {/* Error */}
+
+      {error && (
+        <ErrorMessage
+          message={error}
+          onRetry={fetchEmployees}
+        />
+      )}
 
       {/* Search */}
 
@@ -94,100 +138,114 @@ function Employees() {
 
       <div className="employees-card">
 
-        <div className="table-container">
+        {loading ? (
+          <Loading message="Loading employees..." />
+        ) : (
+          <div className="table-container">
 
-          <table className="employees-table">
+            <table className="employees-table">
 
-            <thead>
+              <thead>
 
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Department</th>
-                <th>Designation</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>User ID</th>
+                  <th>Actions</th>
+                </tr>
 
-            </thead>
+              </thead>
 
-            <tbody>
+              <tbody>
 
-              {filteredEmployees.length > 0 ? (
-                filteredEmployees.map((employee) => (
-                  <tr key={employee.id}>
+                {filteredEmployees.length > 0 ? (
+                  filteredEmployees.map((employee) => (
+                    <tr key={employee.id}>
 
-                    <td className="employee-name">
-                      {employee.name}
-                    </td>
+                      <td className="employee-name">
+                        {employee.name}
+                      </td>
 
-                    <td>
-                      {employee.email}
-                    </td>
+                      <td>
+                        {employee.email}
+                      </td>
 
-                    <td>
-                      <span className="department-badge">
-                        {employee.department}
-                      </span>
-                    </td>
+                      <td>
+                        <span className="department-badge">
+                          {employee.department}
+                        </span>
+                      </td>
 
-                    <td>
-                      {employee.designation}
-                    </td>
+                      <td>
+                        {employee.designation}
+                      </td>
 
-                    <td>
+                      <td>
+                        {employee.userId ?? '-'}
+                      </td>
 
-                      <span
-                        className={`employee-status ${
-                          employee.status === 'Active'
-                            ? 'status-active'
-                            : 'status-inactive'
-                        }`}
-                      >
-                        {employee.status}
-                      </span>
+                      <td>
 
-                    </td>
+                        <div className="employee-actions">
 
-                    <td>
+                          <button
+                            className="edit-employee-button"
+                            onClick={() => {
+                              alert(
+                                'Edit Employee functionality will be added later.'
+                              )
+                            }}
+                          >
+                            Edit
+                          </button>
 
-                      <div className="employee-actions">
+                          <button
+                            className="delete-employee-button"
+                            onClick={() =>
+                              handleDelete(employee.id)
+                            }
+                          >
+                            Delete
+                          </button>
 
-                        <button className="edit-employee-button">
-                          Edit
-                        </button>
+                        </div>
 
-                        <button className="delete-employee-button">
-                          Delete
-                        </button>
+                      </td>
 
-                      </div>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
 
+                    <td
+                      colSpan="6"
+                      className="empty-employees"
+                    >
+                      <EmptyState
+                        title={
+                          searchTerm
+                            ? 'No employees found'
+                            : 'No employees available'
+                        }
+                        message={
+                          searchTerm
+                            ? 'No employees match your search.'
+                            : 'There are currently no employees.'
+                        }
+                      />
                     </td>
 
                   </tr>
-                ))
-              ) : (
-                <tr>
+                )}
 
-                  <td
-                    colSpan="6"
-                    className="empty-employees"
-                  >
-                    <EmptyState
-                      title="No employees found"
-                      message="No employees match your search."
-                    />
-                  </td>
+              </tbody>
 
-                </tr>
-              )}
+            </table>
 
-            </tbody>
-
-          </table>
-
-        </div>
+          </div>
+        )}
 
       </div>
 

@@ -214,3 +214,144 @@
     max-width: 100%;
   }
 }
+/* =========================
+   TASK FORM
+   ========================= */
+
+.task-form-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.task-form-header {
+  margin-bottom: 20px;
+}
+
+.task-form-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.task-form-group {
+  margin-bottom: 16px;
+}
+
+.task-form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.task-form-group input,
+.task-form-group textarea,
+.task-form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.task-form-group textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.task-form-group input:focus,
+.task-form-group textarea:focus,
+.task-form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.task-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-task-button,
+.cancel-task-button {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.save-task-button {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.save-task-button:hover {
+  background: #1d4ed8;
+}
+
+.cancel-task-button {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.cancel-task-button:hover {
+  background: #d1d5db;
+}
+
+.save-task-button:disabled,
+.cancel-task-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+/* =========================
+   TASK STATUS COLORS
+   ========================= */
+
+.task-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-status.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.task-status.in-progress {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.task-status.todo {
+  background: #fef3c7;
+  color: #92400e;
+}
+.task-priority {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-priority.high {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.task-priority.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.task-priority.low {
+  background: #dcfce7;
+  color: #166534;
+}

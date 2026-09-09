@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.dhiraj.workflowx.dto.UserUpdateRequestDTO;
 import com.dhiraj.workflowx.dto.UserRequestDTO;
 import com.dhiraj.workflowx.dto.UserResponseDTO;
 import com.dhiraj.workflowx.entity.User;
@@ -60,29 +60,39 @@ public class UserService {
     }
 
     public UserResponseDTO updateUser(
-            Long id,
-            UserRequestDTO request) {
+        Long id,
+        UserUpdateRequestDTO request) {
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "User with ID " + id + " not found"
-                        )
-                );
+    User user = userRepository.findById(id)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException(
+                            "User with ID " + id + " not found"
+                    )
+            );
 
-        user.setUsername(request.getUsername());
+    user.setUsername(request.getUsername());
 
-        // Encode password before storing it
+    /*
+     * Update password only when a new password
+     * has been provided.
+     *
+     * If password is blank or null,
+     * keep the existing password.
+     */
+     if (request.getPassword() != null
+            && !request.getPassword().isBlank()) {
+
         user.setPassword(
                 passwordEncoder.encode(request.getPassword())
         );
+     }
 
-        user.setRole(request.getRole());
+      user.setRole(request.getRole());
 
-        User updatedUser = userRepository.save(user);
+       User updatedUser = userRepository.save(user);
 
-        return UserMapper.toDTO(updatedUser);
-    }
+       return UserMapper.toDTO(updatedUser);
+     }
 
     public void deleteUser(Long id) {
 

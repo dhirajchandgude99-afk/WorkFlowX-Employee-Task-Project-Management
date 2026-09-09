@@ -264,3 +264,146 @@
     max-width: 100%;
   }
 }
+.user-form-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.user-form-header {
+  margin-bottom: 20px;
+}
+
+.user-form-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.user-form-group {
+  margin-bottom: 16px;
+}
+
+.user-form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.user-form-group input,
+.user-form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #ffffff;
+}
+
+.user-form-group input:focus,
+.user-form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.user-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-user-button,
+.cancel-user-button {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.save-user-button {
+  background: #2563eb;
+  color: white;
+}
+
+.cancel-user-button {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.save-user-button:disabled,
+.cancel-user-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.user-role-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+}
+/* ================================
+   USER ACTION BUTTONS
+================================ */
+
+.user-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-user-button,
+.delete-user-button {
+  border: none;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.edit-user-button {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.edit-user-button:hover {
+  background: #1d4ed8;
+}
+
+.delete-user-button {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.delete-user-button:hover {
+  background: #b91c1c;
+}
+
+.edit-user-button:active,
+.delete-user-button:active {
+  transform: scale(0.97);
+}
+.edit-user-button {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.edit-user-button:hover {
+  background: #bfdbfe;
+}
+
+.delete-user-button {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.delete-user-button:hover {
+  background: #fecaca;
+}

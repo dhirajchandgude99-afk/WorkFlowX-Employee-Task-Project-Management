@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.dhiraj.workflowx.dto.UserUpdateRequestDTO;
 import com.dhiraj.workflowx.dto.UserRequestDTO;
 import com.dhiraj.workflowx.dto.UserResponseDTO;
 import com.dhiraj.workflowx.service.UserService;
@@ -66,15 +66,15 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Update a user",
-        description = "Updates an existing user using the specified user ID"
+     summary = "Update a user",
+     description = "Updates an existing user using the specified user ID"
     )
     @PutMapping("/{id}")
-    public UserResponseDTO updateUser(
-            @PathVariable Long id,
-            @Valid @RequestBody UserRequestDTO request) {
+     public UserResponseDTO updateUser(
+        @PathVariable Long id,
+        @Valid @RequestBody UserUpdateRequestDTO request) {
 
-        return userService.updateUser(id, request);
+    return userService.updateUser(id, request);
     }
 
     @Operation(

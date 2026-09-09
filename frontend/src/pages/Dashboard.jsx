@@ -1,171 +1,323 @@
+import { useEffect, useState } from 'react'
+import Loading from '../components/Loading'
+import ErrorMessage from '../components/ErrorMessage'
+import {
+  getUsers,
+  getEmployees,
+  getProjects,
+  getTasks,
+} from '../services/api'
 import './Dashboard.css'
 
 function Dashboard() {
-  const statistics = [
-    {
-      title: 'Total Users',
-      value: 12,
-      description: 'Registered users',
-    },
-    {
-      title: 'Employees',
-      value: 25,
-      description: 'Active employees',
-    },
-    {
-      title: 'Projects',
-      value: 8,
-      description: 'Active projects',
-    },
-    {
-      title: 'Tasks',
-      value: 42,
-      description: 'Total tasks',
-    },
-  ]
+  const [users, setUsers] = useState([])
+  const [employees, setEmployees] = useState([])
+  const [projects, setProjects] = useState([])
+  const [tasks, setTasks] = useState([])
 
-  const recentProjects = [
-    {
-      name: 'WorkflowX Development',
-      status: 'In Progress',
-    },
-    {
-      name: 'Employee Management System',
-      status: 'Completed',
-    },
-    {
-      name: 'Project Management Portal',
-      status: 'In Progress',
-    },
-  ]
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const recentTasks = [
-    {
-      name: 'Complete authentication module',
-      status: 'Completed',
-    },
-    {
-      name: 'Build employee management UI',
-      status: 'In Progress',
-    },
-    {
-      name: 'Implement task management',
-      status: 'Pending',
-    },
-  ]
+  // =========================
+  // FETCH DASHBOARD DATA
+  // =========================
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true)
+      setError('')
+
+      const [
+        usersData,
+        employeesData,
+        projectsData,
+        tasksData,
+      ] = await Promise.all([
+        getUsers(),
+        getEmployees(),
+        getProjects(),
+        getTasks(),
+      ])
+
+      setUsers(usersData || [])
+      setEmployees(employeesData || [])
+      setProjects(projectsData || [])
+      setTasks(tasksData || [])
+    } catch (error) {
+      console.error(
+        'Failed to fetch dashboard data:',
+        error
+      )
+
+      if (error.status === 401 || error.status === 403) {
+        setError(
+          'You are not authorized to view dashboard statistics.'
+        )
+      } else {
+        setError(
+          error.message ||
+          'Failed to load dashboard statistics.'
+        )
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  // =========================
+  // TASK COUNTS
+  // =========================
+
+  const todoTasks = tasks.filter(
+    (task) =>
+      task.status?.toUpperCase() === 'TODO'
+  ).length
+
+  const inProgressTasks = tasks.filter(
+    (task) =>
+      task.status?.toUpperCase() === 'IN_PROGRESS'
+  ).length
+
+  const completedTasks = tasks.filter(
+    (task) =>
+      task.status?.toUpperCase() === 'COMPLETED'
+  ).length
+
+  // =========================
+  // PROJECT COUNTS
+  // =========================
+
+  const activeProjects = projects.filter(
+    (project) =>
+      project.status?.toUpperCase() === 'ACTIVE'
+  ).length
+
+  const inProgressProjects = projects.filter(
+    (project) =>
+      project.status
+        ?.toUpperCase()
+        .replace(/\s+/g, '_') === 'IN_PROGRESS'
+  ).length
+
+  const completedProjects = projects.filter(
+    (project) =>
+      project.status?.toUpperCase() === 'COMPLETED'
+  ).length
+
+  // =========================
+  // RENDER
+  // =========================
 
   return (
-    <div className="dashboard">
+    <div className="dashboard-page">
 
-      {/* Dashboard Header */}
+      {/* HEADER */}
 
       <div className="dashboard-header">
+
         <div>
           <h1>Dashboard</h1>
-          <p>Welcome back to WorkflowX</p>
+
+          <p>
+            WorkflowX overview and statistics
+          </p>
         </div>
+
+        <button
+          className="refresh-dashboard-button"
+          onClick={fetchDashboardData}
+          disabled={loading}
+        >
+          {loading ? 'Refreshing...' : '↻ Refresh'}
+        </button>
+
       </div>
 
-      {/* Statistics */}
+      {/* ERROR */}
 
-      <div className="stats-grid">
+      {error && (
+        <ErrorMessage
+          message={error}
+          onRetry={fetchDashboardData}
+        />
+      )}
 
-        {statistics.map((stat) => (
-          <div
-            className="stat-card"
-            key={stat.title}
-          >
-            <div className="stat-card-content">
-              <h3>{stat.title}</h3>
+      {/* LOADING */}
 
-              <p className="stat-value">
-                {stat.value}
-              </p>
+      {loading ? (
+        <Loading message="Loading dashboard..." />
+      ) : (
+        <>
+          {/* =========================
+              STAT CARDS
+          ========================= */}
 
-              <p className="stat-description">
-                {stat.description}
-              </p>
+          <div className="dashboard-stat-grid">
+
+            <div className="dashboard-stat-card">
+              <div className="dashboard-stat-icon">
+                👥
+              </div>
+
+              <div>
+                <h3>Total Users</h3>
+                <p>{users.length}</p>
+              </div>
             </div>
-          </div>
-        ))}
 
-      </div>
-
-      {/* Dashboard Overview */}
-
-      <div className="dashboard-grid">
-
-        {/* Recent Projects */}
-
-        <div className="dashboard-card">
-
-          <div className="card-header">
-            <h2>Recent Projects</h2>
-          </div>
-
-          <div className="card-list">
-
-            {recentProjects.map((project) => (
-              <div
-                className="list-item"
-                key={project.name}
-              >
-
-                <div>
-                  <h3>{project.name}</h3>
-                </div>
-
-                <span
-                  className={`status status-${project.status
-                    .toLowerCase()
-                    .replace(' ', '-')}`}
-                >
-                  {project.status}
-                </span>
-
+            <div className="dashboard-stat-card">
+              <div className="dashboard-stat-icon">
+                👨‍💼
               </div>
-            ))}
 
-          </div>
-
-        </div>
-
-        {/* Recent Tasks */}
-
-        <div className="dashboard-card">
-
-          <div className="card-header">
-            <h2>Recent Tasks</h2>
-          </div>
-
-          <div className="card-list">
-
-            {recentTasks.map((task) => (
-              <div
-                className="list-item"
-                key={task.name}
-              >
-
-                <div>
-                  <h3>{task.name}</h3>
-                </div>
-
-                <span
-                  className={`status status-${task.status
-                    .toLowerCase()
-                    .replace(' ', '-')}`}
-                >
-                  {task.status}
-                </span>
-
+              <div>
+                <h3>Total Employees</h3>
+                <p>{employees.length}</p>
               </div>
-            ))}
+            </div>
+
+            <div className="dashboard-stat-card">
+              <div className="dashboard-stat-icon">
+                📁
+              </div>
+
+              <div>
+                <h3>Total Projects</h3>
+                <p>{projects.length}</p>
+              </div>
+            </div>
+
+            <div className="dashboard-stat-card">
+              <div className="dashboard-stat-icon">
+                📋
+              </div>
+
+              <div>
+                <h3>Total Tasks</h3>
+                <p>{tasks.length}</p>
+              </div>
+            </div>
 
           </div>
 
-        </div>
+          {/* =========================
+              TASK SUMMARY
+          ========================= */}
 
-      </div>
+          <div className="dashboard-section">
+
+            <div className="dashboard-section-header">
+              <h2>Task Overview</h2>
+            </div>
+
+            <div className="dashboard-summary-grid">
+
+              <div className="dashboard-summary-card todo-summary">
+                <span>TODO</span>
+                <strong>{todoTasks}</strong>
+              </div>
+
+              <div className="dashboard-summary-card progress-summary">
+                <span>IN PROGRESS</span>
+                <strong>
+                  {inProgressTasks}
+                </strong>
+              </div>
+
+              <div className="dashboard-summary-card completed-summary">
+                <span>COMPLETED</span>
+                <strong>
+                  {completedTasks}
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* =========================
+              PROJECT SUMMARY
+          ========================= */}
+
+          <div className="dashboard-section">
+
+            <div className="dashboard-section-header">
+              <h2>Project Overview</h2>
+            </div>
+
+            <div className="dashboard-summary-grid">
+
+              <div className="dashboard-summary-card active-summary">
+                <span>ACTIVE</span>
+                <strong>
+                  {activeProjects}
+                </strong>
+              </div>
+
+              <div className="dashboard-summary-card progress-summary">
+                <span>IN PROGRESS</span>
+                <strong>
+                  {inProgressProjects}
+                </strong>
+              </div>
+
+              <div className="dashboard-summary-card completed-summary">
+                <span>COMPLETED</span>
+                <strong>
+                  {completedProjects}
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* =========================
+              QUICK SUMMARY
+          ========================= */}
+
+          <div className="dashboard-section">
+
+            <div className="dashboard-section-header">
+              <h2>System Summary</h2>
+            </div>
+
+            <div className="dashboard-summary-list">
+
+              <div className="dashboard-summary-row">
+                <span>Users</span>
+                <strong>{users.length}</strong>
+              </div>
+
+              <div className="dashboard-summary-row">
+                <span>Employees</span>
+                <strong>
+                  {employees.length}
+                </strong>
+              </div>
+
+              <div className="dashboard-summary-row">
+                <span>Projects</span>
+                <strong>
+                  {projects.length}
+                </strong>
+              </div>
+
+              <div className="dashboard-summary-row">
+                <span>Tasks</span>
+                <strong>{tasks.length}</strong>
+              </div>
+
+            </div>
+
+          </div>
+
+        </>
+      )}
 
     </div>
   )

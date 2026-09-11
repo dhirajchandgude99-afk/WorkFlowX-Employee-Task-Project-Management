@@ -19,8 +19,10 @@ export const logout = () => {
 }
 
 /*
- * Decode JWT payload
- */
+========================================
+Decode JWT Payload
+========================================
+*/
 export const getTokenPayload = () => {
   const token = getToken()
 
@@ -31,11 +33,16 @@ export const getTokenPayload = () => {
   try {
     const payload = token.split('.')[1]
 
+    if (!payload) {
+      return null
+    }
+
     const decodedPayload = atob(
       payload.replace(/-/g, '+').replace(/_/g, '/')
     )
 
     return JSON.parse(decodedPayload)
+
   } catch (error) {
     console.error('Unable to decode JWT:', error)
     return null
@@ -43,17 +50,19 @@ export const getTokenPayload = () => {
 }
 
 /*
- * Get username from JWT
- */
+========================================
+Username
+========================================
+*/
 export const getUsername = () => {
-  const payload = getTokenPayload()
-
-  return payload?.sub || null
+  return getTokenPayload()?.sub || null
 }
 
 /*
- * Get role from JWT
- */
+========================================
+Role
+========================================
+*/
 export const getRole = () => {
   const payload = getTokenPayload()
 
@@ -77,8 +86,10 @@ export const getRole = () => {
 }
 
 /*
- * Check whether current user has a specific role
- */
+========================================
+Role Check
+========================================
+*/
 export const hasRole = (role) => {
   const currentRole = getRole()
 
@@ -89,16 +100,27 @@ export const hasRole = (role) => {
   return currentRole.toUpperCase() === role.toUpperCase()
 }
 
-/*
- * Check whether current user is ADMIN
- */
 export const isAdmin = () => {
   return hasRole('ADMIN')
 }
 
-/*
- * Check whether current user is USER
- */
 export const isUser = () => {
   return hasRole('USER')
+}
+
+/*
+========================================
+JWT Expiry Check
+========================================
+*/
+export const isTokenExpired = () => {
+  const payload = getTokenPayload()
+
+  if (!payload || !payload.exp) {
+    return true
+  }
+
+  const currentTime = Math.floor(Date.now() / 1000)
+
+  return payload.exp <= currentTime
 }

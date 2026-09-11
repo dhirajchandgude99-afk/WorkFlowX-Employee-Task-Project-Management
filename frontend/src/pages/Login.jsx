@@ -8,18 +8,43 @@ import Loading from '../components/Loading'
 function Login() {
   const navigate = useNavigate()
 
+  const [showPassword, setShowPassword] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [authMessage, setAuthMessage] = useState('')
+
+  /*
+  ========================================
+  Redirect if already logged in
+  ========================================
+  */
   useEffect(() => {
     if (getToken()) {
       navigate('/dashboard', { replace: true })
     }
   }, [navigate])
 
-  const [showPassword, setShowPassword] = useState(false)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  /*
+  ========================================
+  Authentication expiry message
+  ========================================
+  */
+  useEffect(() => {
+    const message = localStorage.getItem('authMessage')
 
+    if (message) {
+      setAuthMessage(message)
+      localStorage.removeItem('authMessage')
+    }
+  }, [])
+
+  /*
+  ========================================
+  Login
+  ========================================
+  */
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -34,15 +59,25 @@ function Login() {
     }
 
     setError('')
+    setAuthMessage('')
     setLoading(true)
 
     try {
       const response = await loginUser(username, password)
 
-      if (response.status === 200) {
-        saveToken(response.data.token)
-        navigate('/dashboard')
+      /*
+      ========================================
+      Login successful
+      ========================================
+      */
+
+      if (response && response.token) {
+        saveToken(response.token)
+        navigate('/dashboard', { replace: true })
+      } else {
+        setError('Login failed. Token was not received.')
       }
+
     } catch (error) {
       console.error('Login failed:', error)
 
@@ -61,8 +96,18 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
+
         <h1>WorkflowX</h1>
-        <p>Employee Task & Project Management System</p>
+
+        <p>
+          Employee Task & Project Management System
+        </p>
+
+        {authMessage && (
+          <div className="login-expiry-message">
+            {authMessage}
+          </div>
+        )}
 
         {error && (
           <p className="login-error">
@@ -71,6 +116,7 @@ function Login() {
         )}
 
         <form onSubmit={handleSubmit}>
+
           <div className="form-group">
             <label htmlFor="username">
               Username
@@ -96,6 +142,7 @@ function Login() {
             </label>
 
             <div className="password-input">
+
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
@@ -119,6 +166,7 @@ function Login() {
               >
                 {showPassword ? 'Hide' : 'Show'}
               </button>
+
             </div>
           </div>
 
@@ -128,11 +176,13 @@ function Login() {
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
+
         </form>
 
         {loading && (
           <Loading message="Authenticating..." />
         )}
+
       </div>
     </div>
   )

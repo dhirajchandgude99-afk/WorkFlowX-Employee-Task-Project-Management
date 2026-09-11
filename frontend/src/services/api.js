@@ -1,28 +1,66 @@
-import { getToken } from '../utils/auth'
+import {
+  getToken,
+  logout,
+  isTokenExpired,
+} from '../utils/auth'
 
 const API_BASE_URL = 'http://localhost:8080'
 
+/*
+========================================
+Handle API Response
+========================================
+*/
 const handleResponse = async (response) => {
   let data = null
 
-  const contentType = response.headers.get('content-type')
-
-  if (contentType && contentType.includes('application/json')) {
-    data = await response.json()
-  } else {
+  try {
     const text = await response.text()
 
     if (text) {
-      data = text
+      data = JSON.parse(text)
     }
+  } catch (error) {
+    console.error('Unable to parse API response:', error)
   }
 
-  if (!response.ok) {
-    const error = new Error(
-      data?.message ||
-        (typeof data === 'string' ? data : null) ||
-        `Request failed with status ${response.status}`
+  /*
+  ========================================
+  Authentication Expired
+  ========================================
+  */
+  if (response.status === 401) {
+    logout()
+
+    localStorage.setItem(
+      'authMessage',
+      'Your session has expired. Please log in again.'
     )
+
+    window.location.href = '/login'
+
+    const error = new Error(
+      'Your session has expired. Please log in again.'
+    )
+
+    error.status = 401
+    error.data = data
+
+    throw error
+  }
+
+  /*
+  ========================================
+  Other API Errors
+  ========================================
+  */
+  if (!response.ok) {
+    const message =
+      data?.message ||
+      data?.error ||
+      'Something went wrong. Please try again.'
+
+    const error = new Error(message)
 
     error.status = response.status
     error.data = data
@@ -34,8 +72,10 @@ const handleResponse = async (response) => {
 }
 
 /*
- * LOGIN
- */
+========================================
+Login
+========================================
+*/
 export const loginUser = async (username, password) => {
   const response = await fetch(
     `${API_BASE_URL}/api/auth/login`,
@@ -51,26 +91,51 @@ export const loginUser = async (username, password) => {
     }
   )
 
-  const data = await handleResponse(response)
-
-  return {
-    status: response.status,
-    data,
-  }
+  return handleResponse(response)
 }
 
 /*
- * AUTHENTICATED REQUEST
- */
-export const authFetch = async (
-  url,
-  options = {}
-) => {
+========================================
+Authenticated Fetch
+========================================
+*/
+export const authFetch = async (url, options = {}) => {
   const token = getToken()
 
+  /*
+  ========================================
+  Check JWT expiry before API request
+  ========================================
+  */
+  if (token && isTokenExpired()) {
+    logout()
+
+    localStorage.setItem(
+      'authMessage',
+      'Your session has expired. Please log in again.'
+    )
+
+    window.location.href = '/login'
+
+    const error = new Error(
+      'Your session has expired. Please log in again.'
+    )
+
+    error.status = 401
+
+    throw error
+  }
+
   const headers = {
-    ...options.headers,
-    Authorization: `Bearer ${token}`,
+    ...(options.headers || {}),
+    'Content-Type': 'application/json',
+  }
+
+  /*
+  Add JWT to protected request
+  */
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
   }
 
   const response = await fetch(
@@ -81,149 +146,131 @@ export const authFetch = async (
     }
   )
 
-  return response
+  return handleResponse(response)
 }
 
 /*
- * GET REQUEST
- */
+========================================
+GET
+========================================
+*/
 export const apiGet = async (url) => {
-  const response = await authFetch(url)
-
-  return handleResponse(response)
+  return authFetch(url, {
+    method: 'GET',
+  })
 }
 
 /*
- * POST REQUEST
- */
+========================================
+POST
+========================================
+*/
 export const apiPost = async (url, data) => {
-  const response = await authFetch(url, {
+  return authFetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(data),
   })
-
-  return handleResponse(response)
 }
 
 /*
- * PUT REQUEST
- */
+========================================
+PUT
+========================================
+*/
 export const apiPut = async (url, data) => {
-  const response = await authFetch(url, {
+  return authFetch(url, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(data),
   })
-
-  return handleResponse(response)
 }
 
 /*
- * DELETE REQUEST
- */
+========================================
+DELETE
+========================================
+*/
 export const apiDelete = async (url) => {
-  const response = await authFetch(url, {
+  return authFetch(url, {
     method: 'DELETE',
   })
-
-  return handleResponse(response)
 }
 
 /*
- * USER API
- */
-export const getUsers = () => {
-  return apiGet('/api/users')
-}
+========================================
+USERS
+========================================
+*/
+export const getUsers = () =>
+  apiGet('/api/users')
 
-export const getUserById = (id) => {
-  return apiGet(`/api/users/${id}`)
-}
+export const getUserById = (id) =>
+  apiGet(`/api/users/${id}`)
 
-export const createUser = (user) => {
-  return apiPost('/api/users', user)
-}
+export const createUser = (user) =>
+  apiPost('/api/users', user)
 
-export const updateUser = (id, user) => {
-  return apiPut(`/api/users/${id}`, user)
-}
+export const updateUser = (id, user) =>
+  apiPut(`/api/users/${id}`, user)
 
-export const deleteUser = (id) => {
-  return apiDelete(`/api/users/${id}`)
-}
+export const deleteUser = (id) =>
+  apiDelete(`/api/users/${id}`)
 
 /*
- * EMPLOYEE API
- */
-export const getEmployees = () => {
-  return apiGet('/api/employees')
-}
+========================================
+EMPLOYEES
+========================================
+*/
+export const getEmployees = () =>
+  apiGet('/api/employees')
 
-export const getEmployeeById = (id) => {
-  return apiGet(`/api/employees/${id}`)
-}
+export const getEmployeeById = (id) =>
+  apiGet(`/api/employees/${id}`)
 
-export const createEmployee = (employee) => {
-  return apiPost('/api/employees', employee)
-}
+export const createEmployee = (employee) =>
+  apiPost('/api/employees', employee)
 
-export const updateEmployee = (id, employee) => {
-  return apiPut(`/api/employees/${id}`, employee)
-}
+export const updateEmployee = (id, employee) =>
+  apiPut(`/api/employees/${id}`, employee)
 
-export const deleteEmployee = (id) => {
-  return apiDelete(`/api/employees/${id}`)
-}
+export const deleteEmployee = (id) =>
+  apiDelete(`/api/employees/${id}`)
 
 /*
- * PROJECT API
- */
-export const getProjects = () => {
-  return apiGet('/api/projects')
-}
+========================================
+PROJECTS
+========================================
+*/
+export const getProjects = () =>
+  apiGet('/api/projects')
 
-export const getProjectById = (id) => {
-  return apiGet(`/api/projects/${id}`)
-}
+export const getProjectById = (id) =>
+  apiGet(`/api/projects/${id}`)
 
-export const createProject = (project) => {
-  return apiPost('/api/projects', project)
-}
+export const createProject = (project) =>
+  apiPost('/api/projects', project)
 
-export const updateProject = (id, project) => {
-  return apiPut(`/api/projects/${id}`, project)
-}
+export const updateProject = (id, project) =>
+  apiPut(`/api/projects/${id}`, project)
 
-export const deleteProject = (id) => {
-  return apiDelete(`/api/projects/${id}`)
-}
+export const deleteProject = (id) =>
+  apiDelete(`/api/projects/${id}`)
 
 /*
- * TASK API
- */
-export const getTasks = () => {
-  return apiGet('/api/tasks')
-}
+========================================
+TASKS
+========================================
+*/
+export const getTasks = () =>
+  apiGet('/api/tasks')
 
-export const getTaskById = (id) => {
-  return apiGet(`/api/tasks/${id}`)
-}
+export const getTaskById = (id) =>
+  apiGet(`/api/tasks/${id}`)
 
-export const createTask = (task) => {
-  return apiPost('/api/tasks', task)
-}
+export const createTask = (task) =>
+  apiPost('/api/tasks', task)
 
-export const updateTask = (id, task) => {
-  return apiPut(`/api/tasks/${id}`, task)
-}
+export const updateTask = (id, task) =>
+  apiPut(`/api/tasks/${id}`, task)
 
-export const deleteTask = (id) => {
-  return apiDelete(`/api/tasks/${id}`)
-}
-
-export default API_BASE_URL
+export const deleteTask = (id) =>
+  apiDelete(`/api/tasks/${id}`)

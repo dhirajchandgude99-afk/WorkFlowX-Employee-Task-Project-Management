@@ -4,7 +4,7 @@ services:
     image: mysql:8.0
     container_name: workflowx-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: Dhiraj@123
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: workflowx
     ports:
       - "3307:3306"
@@ -12,6 +12,11 @@ services:
   backend:
     image: workflowx-backend:latest
     container_name: workflowx-backend
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/workflowx
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8080:8080"
     depends_on:

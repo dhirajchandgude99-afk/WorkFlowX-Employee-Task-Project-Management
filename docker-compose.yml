@@ -1,0 +1,13 @@
+services:
+
+  backend:
+    image: workflowx-backend:latest
+    container_name: workflowx-backend
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: workflowx-frontend:latest
+    container_name: workflowx-frontend
+    ports:
+      - "5173:5173"

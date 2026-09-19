@@ -43,11 +43,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                  // Public APIs
-                .requestMatchers(
-                 "/swagger-ui/**",
-                 "/v3/api-docs/**",
-                  "/api/auth/login"
-                 ).permitAll()
+                .requestMatchers("/**").permitAll()
 
                // ADMIN-only APIs
                .requestMatchers("/api/users/**")

@@ -18,6 +18,8 @@ import java.util.List;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.dhiraj.workflowx.security.JwtAuthenticationFilter;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -32,32 +34,44 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
+     public SecurityFilterChain securityFilterChain(
+        HttpSecurity http) throws Exception {
 
-        http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> {})
-            .formLogin(form -> form.disable())
-            .httpBasic(basic -> basic.disable())
-            .authorizeHttpRequests(auth -> auth
+       http
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> {})
+        .formLogin(form -> form.disable())
+        .httpBasic(basic -> basic.disable())
 
-                 // Public APIs
-                .requestMatchers("/**").permitAll()
+        .exceptionHandling(exception -> exception
+            .authenticationEntryPoint(
+                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
+            )
+        )
 
-               // ADMIN-only APIs
-               .requestMatchers("/api/users/**")
-               .hasRole("ADMIN")
+        .authorizeHttpRequests(auth -> auth
 
-               // All other APIs require authentication
-              .anyRequest().authenticated()
-             )
-            .addFilterBefore(
-                jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class
-            );
+            // Public APIs
+            .requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/api/auth/login"
+            ).permitAll()
 
-        return http.build();
+            // ADMIN-only APIs
+            .requestMatchers("/api/users/**")
+            .hasRole("ADMIN")
+
+            // All other APIs require authentication
+            .anyRequest().authenticated()
+        )
+
+        .addFilterBefore(
+            jwtAuthenticationFilter,
+            UsernamePasswordAuthenticationFilter.class
+        );
+
+     return http.build();
     }
 
     @Bean

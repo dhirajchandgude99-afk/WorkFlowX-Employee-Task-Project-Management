@@ -30,21 +30,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
+protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain filterChain)
+        throws ServletException, IOException {
 
-        final String authHeader =
-                request.getHeader("Authorization");
+    final String authHeader =
+            request.getHeader("Authorization");
 
-        if (authHeader == null ||
-                !authHeader.startsWith("Bearer ")) {
+    if (authHeader == null ||
+            !authHeader.startsWith("Bearer ")) {
 
-            filterChain.doFilter(request, response);
-            return;
-        }
+        filterChain.doFilter(request, response);
+        return;
+    }
+
+    try {
 
         final String jwt =
                 authHeader.substring(7);
@@ -53,8 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtService.extractUsername(jwt);
 
         if (username != null &&
-                SecurityContextHolder.getContext()
-                        .getAuthentication() == null) {
+                SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails =
                     userDetailsService.loadUserByUsername(username);
@@ -78,6 +79,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(request, response);
+    } catch (io.jsonwebtoken.JwtException |
+             IllegalArgumentException e) {
+
+        // Invalid JWT → continue without authentication.
+        // Spring Security will return 401 for the protected endpoint.
     }
+
+    filterChain.doFilter(request, response);
+}
 }

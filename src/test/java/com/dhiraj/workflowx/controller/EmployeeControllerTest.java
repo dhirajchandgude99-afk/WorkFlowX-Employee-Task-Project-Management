@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.dhiraj.workflowx.security.JwtService;
@@ -24,7 +23,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(EmployeeController.class)
@@ -241,4 +239,196 @@ class EmployeeControllerTest {
         verify(employeeService, times(1))
                 .deleteEmployee(1L);
     }
+
+       @Test
+       void createEmployee_shouldReturn400_whenRequestIsInvalid() throws Exception {
+
+          String invalidRequest = """
+            {
+                "name": "",
+                "email": "",
+                "phone": "",
+                "department": "",
+                "designation": ""
+            }
+            """;
+
+           mockMvc.perform(
+            post("/api/employees")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(invalidRequest)
+                )
+         .andExpect(status().isBadRequest());
+    }
+
+     @Test
+      void updateEmployee_shouldReturn400_whenRequestIsInvalid() throws Exception {
+
+         String invalidRequest = """
+            {
+                "name": "",
+                "email": "",
+                "phone": "",
+                "department": "",
+                "designation": ""
+            }
+            """;
+
+         mockMvc.perform(
+            put("/api/employees/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(invalidRequest)
+         )
+         .andExpect(status().isBadRequest());
+       }
+        @Test
+         void getEmployeeById_shouldReturn404_whenEmployeeNotFound()
+         throws Exception {
+
+         when(employeeService.getEmployeeById(9999L))
+            .thenThrow(
+                    new ResourceNotFoundException(
+                            "Employee not found with id: 9999"
+                    )
+            );
+
+         mockMvc.perform(
+            get("/api/employees/9999")
+         )
+         .andExpect(status().isNotFound());
+        }
+     @Test
+      void updateEmployee_shouldReturn404_whenEmployeeNotFound()
+        throws Exception {
+
+         String validRequest = """
+            {
+                "name": "Test Employee",
+                "email": "test@example.com",
+                "phone": "9876543210",
+                "department": "IT",
+                "designation": "Developer",
+                "userId": 1
+            }
+            """;
+
+         when(employeeService.updateEmployee(
+            eq(9999L),
+            any(EmployeeRequestDTO.class)
+         )).thenThrow(
+            new ResourceNotFoundException(
+                    "Employee not found with id: 9999"
+            )
+         );
+
+         mockMvc.perform(
+            put("/api/employees/9999")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(validRequest)
+         )
+         .andExpect(status().isNotFound());
+        }
+     @Test
+       void deleteEmployee_shouldReturn404_whenEmployeeNotFound()
+         throws Exception {
+
+           doThrow(
+            new ResourceNotFoundException(
+                    "Employee not found with id: 9999"
+            )
+          ).when(employeeService).deleteEmployee(9999L);
+ 
+         mockMvc.perform(
+            delete("/api/employees/9999")
+         )
+          .andExpect(status().isNotFound());
+        }
+     @Test
+      void createEmployee_shouldReturnValidationMessage_whenRequestIsInvalid()
+        throws Exception {
+
+         String invalidRequest = """
+            {
+                "name": "",
+                "email": "",
+                "phone": "",
+                "department": "",
+                "designation": ""
+            }
+            """;
+
+         mockMvc.perform(
+            post("/api/employees")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(invalidRequest)
+          )
+         .andExpect(status().isBadRequest())
+         .andExpect(jsonPath("$.status").value(400))
+           .andExpect(jsonPath("$.error").value("Validation Failed"));
+        }
+             @Test
+void getEmployeeById_shouldReturn404WithErrorResponse_whenEmployeeNotFound()
+        throws Exception {
+
+    when(employeeService.getEmployeeById(9999L))
+            .thenThrow(
+                    new ResourceNotFoundException(
+                            "Employee not found with id: 9999"
+                    )
+            );
+
+    mockMvc.perform(
+            get("/api/employees/9999")
+    )
+    .andExpect(status().isNotFound())
+    .andExpect(jsonPath("$.status").value(404))
+    .andExpect(jsonPath("$.error").value("Not Found"))
+    .andExpect(jsonPath("$.message")
+            .value("Employee not found with id: 9999"));
+}
+         @Test
+void deleteEmployee_shouldReturn404WithErrorResponse_whenEmployeeNotFound()
+        throws Exception {
+
+    doThrow(
+            new ResourceNotFoundException(
+                    "Employee not found with id: 9999"
+            )
+    ).when(employeeService).deleteEmployee(9999L);
+
+    mockMvc.perform(
+            delete("/api/employees/9999")
+    )
+    .andExpect(status().isNotFound())
+    .andExpect(jsonPath("$.status").value(404))
+    .andExpect(jsonPath("$.error").value("Not Found"))
+    .andExpect(jsonPath("$.message")
+            .value("Employee not found with id: 9999"));
+}
+       @Test
+void createEmployee_shouldReturnNameValidationMessage_whenNameIsMissing()
+        throws Exception {
+
+    String invalidRequest = """
+            {
+                "name": "",
+                "email": "test@example.com",
+                "phone": "9876543210",
+                "department": "IT",
+                "designation": "Developer",
+                "userId": 1
+            }
+            """;
+
+    mockMvc.perform(
+            post("/api/employees")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(invalidRequest)
+    )
+    .andExpect(status().isBadRequest())
+    .andExpect(jsonPath("$.status").value(400))
+    .andExpect(jsonPath("$.error").value("Validation Failed"))
+    .andExpect(jsonPath("$.message")
+            .value("Name is required"));
+}
 }

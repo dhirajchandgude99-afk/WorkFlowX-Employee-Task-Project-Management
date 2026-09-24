@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+# Environment variables / secrets
+.env
+
+# Build artifacts
+app.jar
+
+# Database backups
+*.sql
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/

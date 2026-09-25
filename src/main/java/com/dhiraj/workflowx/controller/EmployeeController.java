@@ -35,8 +35,8 @@ public class EmployeeController {
     }
 
     @Operation(
-        summary = "Get all employees",
-        description = "Returns a list of all employees"
+    summary = "Get all employees",
+    description = "Retrieves all employees registered in WorkflowX."
     )
     @GetMapping
     public List<EmployeeResponseDTO> getAllEmployees() {
@@ -44,8 +44,8 @@ public class EmployeeController {
     }
 
     @Operation(
-        summary = "Get employee by ID",
-        description = "Returns an employee using the specified employee ID"
+    summary = "Get employee by ID",
+    description = "Retrieves a specific employee using their unique employee ID."
     )
     @GetMapping("/{id}")
     public EmployeeResponseDTO getEmployeeById(
@@ -55,8 +55,8 @@ public class EmployeeController {
     }
 
     @Operation(
-        summary = "Create a new employee",
-        description = "Creates a new WorkflowX employee"
+    summary = "Create employee",
+    description = "Creates a new employee and associates the employee with a WorkflowX user."
     )
     @PostMapping
     public EmployeeResponseDTO createEmployee(
@@ -66,8 +66,8 @@ public class EmployeeController {
     }
 
     @Operation(
-        summary = "Update an employee",
-        description = "Updates an existing employee using the specified employee ID"
+    summary = "Update employee",
+    description = "Updates the details of an existing employee."
     )
     @PutMapping("/{id}")
     public EmployeeResponseDTO updateEmployee(
@@ -78,8 +78,8 @@ public class EmployeeController {
     }
 
     @Operation(
-        summary = "Delete an employee",
-        description = "Deletes an existing employee using the specified employee ID"
+    summary = "Delete employee",
+    description = "Deletes an existing employee from WorkflowX."
     )
     @DeleteMapping("/{id}")
     public String deleteEmployee(

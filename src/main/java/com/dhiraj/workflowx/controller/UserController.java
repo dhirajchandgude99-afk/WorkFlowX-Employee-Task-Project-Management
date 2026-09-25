@@ -35,8 +35,8 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Get all users",
-        description = "Returns a list of all users"
+    summary = "Get all users",
+    description = "Retrieves all users registered in WorkflowX."
     )
     @GetMapping
     public List<UserResponseDTO> getAllUsers() {
@@ -44,8 +44,8 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Get user by ID",
-        description = "Returns a user using the specified user ID"
+    summary = "Get user by ID",
+    description = "Retrieves a specific user using their unique user ID."
     )
     @GetMapping("/{id}")
     public UserResponseDTO getUserById(
@@ -55,8 +55,8 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Create a new user",
-        description = "Creates a new WorkflowX user"
+    summary = "Create user",
+    description = "Creates a new WorkflowX user."
     )
     @PostMapping
     public UserResponseDTO createUser(
@@ -66,8 +66,8 @@ public class UserController {
     }
 
     @Operation(
-     summary = "Update a user",
-     description = "Updates an existing user using the specified user ID"
+    summary = "Update user",
+    description = "Updates the username, password or role of an existing user."
     )
     @PutMapping("/{id}")
      public UserResponseDTO updateUser(
@@ -78,8 +78,8 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Delete a user",
-        description = "Deletes an existing user using the specified user ID"
+    summary = "Delete user",
+    description = "Deletes an existing WorkflowX user."
     )
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable Long id) {

@@ -36,7 +36,7 @@ public class TaskController {
 
     @Operation(
         summary = "Get all tasks",
-        description = "Returns a list of all tasks"
+        description = "Retrieves all tasks registered in WorkflowX."
     )
     @GetMapping
     public List<TaskResponseDTO> getAllTasks() {
@@ -45,7 +45,7 @@ public class TaskController {
 
     @Operation(
         summary = "Get task by ID",
-        description = "Returns a task using the specified task ID"
+        description = "Retrieves a specific task using its unique task ID."
     )
     @GetMapping("/{id}")
     public TaskResponseDTO getTaskById(
@@ -55,8 +55,8 @@ public class TaskController {
     }
 
     @Operation(
-        summary = "Create a new task",
-        description = "Creates a new WorkflowX task"
+        summary = "Create task",
+        description = "Creates a new task in WorkflowX."
     )
     @PostMapping
     public TaskResponseDTO createTask(
@@ -66,8 +66,8 @@ public class TaskController {
     }
 
     @Operation(
-        summary = "Update a task",
-        description = "Updates an existing task using the specified task ID"
+        summary = "Update task",
+        description = "Updates the details of an existing WorkflowX task."
     )
     @PutMapping("/{id}")
     public TaskResponseDTO updateTask(
@@ -78,8 +78,8 @@ public class TaskController {
     }
 
     @Operation(
-        summary = "Delete a task",
-        description = "Deletes an existing task using the specified task ID"
+        summary = "Delete task",
+        description = "Deletes an existing WorkflowX task using its unique task ID."
     )
     @DeleteMapping("/{id}")
     public String deleteTask(

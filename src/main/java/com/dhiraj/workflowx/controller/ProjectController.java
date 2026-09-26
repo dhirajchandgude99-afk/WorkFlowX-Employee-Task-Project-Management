@@ -36,7 +36,7 @@ public class ProjectController {
 
     @Operation(
         summary = "Get all projects",
-        description = "Returns a list of all projects"
+        description = "Retrieves all projects registered in WorkflowX."
     )
     @GetMapping
     public List<ProjectResponseDTO> getAllProjects() {
@@ -45,7 +45,7 @@ public class ProjectController {
 
     @Operation(
         summary = "Get project by ID",
-        description = "Returns a project using the specified project ID"
+        description = "Retrieves a specific project using its unique project ID."
     )
     @GetMapping("/{id}")
     public ProjectResponseDTO getProjectById(
@@ -55,8 +55,8 @@ public class ProjectController {
     }
 
     @Operation(
-        summary = "Create a new project",
-        description = "Creates a new WorkflowX project"
+        summary = "Create project",
+        description = "Creates a new project in WorkflowX."
     )
     @PostMapping
     public ProjectResponseDTO createProject(
@@ -66,8 +66,8 @@ public class ProjectController {
     }
 
     @Operation(
-        summary = "Update a project",
-        description = "Updates an existing project using the specified project ID"
+        summary = "Update project",
+        description = "Updates the details of an existing WorkflowX project."
     )
     @PutMapping("/{id}")
     public ProjectResponseDTO updateProject(
@@ -78,8 +78,8 @@ public class ProjectController {
     }
 
     @Operation(
-        summary = "Delete a project",
-        description = "Deletes an existing project using the specified project ID"
+        summary = "Delete project",
+        description = "Deletes an existing WorkflowX project using its unique project ID."
     )
     @DeleteMapping("/{id}")
     public String deleteProject(

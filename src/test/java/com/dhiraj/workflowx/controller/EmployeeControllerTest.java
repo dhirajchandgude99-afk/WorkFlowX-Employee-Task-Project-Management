@@ -381,35 +381,35 @@ void getEmployeeById_shouldReturn404WithErrorResponse_whenEmployeeNotFound()
             get("/api/employees/9999")
     )
     .andExpect(status().isNotFound())
-    .andExpect(jsonPath("$.status").value(404))
-    .andExpect(jsonPath("$.error").value("Not Found"))
-    .andExpect(jsonPath("$.message")
+          .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.error").value("Not Found"))
+          .andExpect(jsonPath("$.message")
             .value("Employee not found with id: 9999"));
-}
-         @Test
-void deleteEmployee_shouldReturn404WithErrorResponse_whenEmployeeNotFound()
-        throws Exception {
+      }
+        @Test
+         void deleteEmployee_shouldReturn404WithErrorResponse_whenEmployeeNotFound()
+         throws Exception {
 
-    doThrow(
+          doThrow(
             new ResourceNotFoundException(
                     "Employee not found with id: 9999"
             )
-    ).when(employeeService).deleteEmployee(9999L);
+         ).when(employeeService).deleteEmployee(9999L);
 
-    mockMvc.perform(
+          mockMvc.perform(
             delete("/api/employees/9999")
-    )
-    .andExpect(status().isNotFound())
-    .andExpect(jsonPath("$.status").value(404))
-    .andExpect(jsonPath("$.error").value("Not Found"))
-    .andExpect(jsonPath("$.message")
+         )
+              .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.status").value(404))
+         .andExpect(jsonPath("$.error").value("Not Found"))
+          .andExpect(jsonPath("$.message")
             .value("Employee not found with id: 9999"));
-}
+        }
        @Test
-void createEmployee_shouldReturnNameValidationMessage_whenNameIsMissing()
-        throws Exception {
+         void createEmployee_shouldReturnNameValidationMessage_whenNameIsMissing()
+          throws Exception {
 
-    String invalidRequest = """
+          String invalidRequest = """
             {
                 "name": "",
                 "email": "test@example.com",
@@ -420,15 +420,40 @@ void createEmployee_shouldReturnNameValidationMessage_whenNameIsMissing()
             }
             """;
 
-    mockMvc.perform(
+          mockMvc.perform(
             post("/api/employees")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(invalidRequest)
-    )
-    .andExpect(status().isBadRequest())
-    .andExpect(jsonPath("$.status").value(400))
-    .andExpect(jsonPath("$.error").value("Validation Failed"))
-    .andExpect(jsonPath("$.message")
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.status").value(400))
+           .andExpect(jsonPath("$.error").value("Validation Failed"))
+         .andExpect(jsonPath("$.message")
             .value("Name is required"));
-}
+        }
+        @Test
+        void createEmployee_withMalformedJson_shouldReturn400() throws Exception {
+
+          String malformedJson = """
+            {
+                "name": "Dhiraj",
+                "email":
+            }
+            """;
+
+          mockMvc.perform(
+            post("/api/employees")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(malformedJson)
+          )
+           .andExpect(status().isBadRequest());
+        }
+        @Test
+        void getEmployee_withInvalidId_shouldReturn400() throws Exception {
+
+         mockMvc.perform(
+            get("/api/employees/abc")
+           )
+           .andExpect(status().isBadRequest());
+        }
 }

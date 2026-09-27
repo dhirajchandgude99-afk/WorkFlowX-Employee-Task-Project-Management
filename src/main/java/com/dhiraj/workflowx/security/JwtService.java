@@ -19,7 +19,11 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Value("${jwt.expiration:3600000}")
+    private long expiration;
+
     private SecretKey getSigningKey() {
+
         return Keys.hmacShaKeyFor(
                 secret.getBytes(StandardCharsets.UTF_8)
         );
@@ -27,21 +31,24 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
 
-         String role = userDetails.getAuthorities()
-            .stream()
-            .findFirst()
-            .map(authority -> authority.getAuthority().replace("ROLE_", ""))
-            .orElse("USER");
+        String role = userDetails.getAuthorities()
+                .stream()
+                .findFirst()
+                .map(authority ->
+                        authority.getAuthority().replace("ROLE_", ""))
+                .orElse("USER");
 
-         return Jwts.builder()
-            .subject(userDetails.getUsername())
-            .claim("role", role)
-            .issuedAt(new Date())
-            .expiration(
-                    new Date(System.currentTimeMillis() + 1000 * 60 * 60)
-            )
-            .signWith(getSigningKey())
-            .compact();
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .claim("role", role)
+                .issuedAt(new Date())
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis() + expiration
+                        )
+                )
+                .signWith(getSigningKey())
+                .compact();
     }
 
     public String extractUsername(String token) {
@@ -62,16 +69,17 @@ public class JwtService {
         String token,
         UserDetails userDetails) {
 
-    try {
+      try {
         String username = extractUsername(token);
 
         return username.equals(userDetails.getUsername())
                 && !isTokenExpired(token);
 
-    } catch (io.jsonwebtoken.ExpiredJwtException e) {
+      } catch (io.jsonwebtoken.JwtException |
+             IllegalArgumentException e) {
+
         return false;
-     }
-    
+       }
     }
 
     private boolean isTokenExpired(String token) {

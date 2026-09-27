@@ -30,62 +30,68 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-protected void doFilterInternal(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        FilterChain filterChain)
-        throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
+            throws ServletException, IOException {
 
-    final String authHeader =
-            request.getHeader("Authorization");
+        final String authHeader =
+                request.getHeader("Authorization");
 
-    if (authHeader == null ||
-            !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null ||
+                !authHeader.startsWith("Bearer ")) {
 
-        filterChain.doFilter(request, response);
-        return;
-    }
-
-    try {
-
-        final String jwt =
-                authHeader.substring(7);
-
-        final String username =
-                jwtService.extractUsername(jwt);
-
-        if (username != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(username);
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                authentication.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request)
-                );
-
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
-            }
+            filterChain.doFilter(request, response);
+            return;
         }
 
-    } catch (io.jsonwebtoken.JwtException |
-             IllegalArgumentException e) {
+        try {
 
-        // Invalid JWT → continue without authentication.
-        // Spring Security will return 401 for the protected endpoint.
+            final String jwt =
+                    authHeader.substring(7);
+
+            final String username =
+                    jwtService.extractUsername(jwt);
+
+            if (username != null &&
+                    SecurityContextHolder
+                            .getContext()
+                            .getAuthentication() == null) {
+
+                UserDetails userDetails =
+                        userDetailsService
+                                .loadUserByUsername(username);
+
+                if (jwtService.isTokenValid(
+                        jwt,
+                        userDetails)) {
+
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    authentication.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
+
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(authentication);
+                }
+            }
+
+        } catch (io.jsonwebtoken.JwtException |
+                 IllegalArgumentException e) {
+
+            // Invalid JWT → continue without authentication.
+            // Spring Security will return 401 for protected endpoints.
+        }
+
+        filterChain.doFilter(request, response);
     }
-
-    filterChain.doFilter(request, response);
-}
 }

@@ -135,4 +135,24 @@ class JwtServiceTest {
 
     assertFalse(valid);
     }
+    @Test
+void isTokenValid_shouldReturnFalseForInvalidToken() {
+
+    UserDetails userDetails =
+            User.withUsername("admin")
+                    .password("password")
+                    .roles("ADMIN")
+                    .build();
+
+    String invalidToken =
+            "this.is.not.a.valid.jwt";
+
+    boolean valid =
+            jwtService.isTokenValid(
+                    invalidToken,
+                    userDetails
+            );
+
+    assertFalse(valid);
+}
 }

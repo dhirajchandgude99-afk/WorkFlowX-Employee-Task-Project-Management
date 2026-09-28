@@ -329,7 +329,7 @@ function Projects() {
 
     const normalizedStatus = status
       .toLowerCase()
-      .replace(/\s+/g, '-')
+      .replace(/[\s_]+/g, '-')
 
     return `project-status ${normalizedStatus}`
   }

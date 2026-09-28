@@ -1,6 +1,16 @@
-* {
+/* =========================
+   GLOBAL BOX SIZING
+   ========================= */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
+
+/* =========================
+   DOCUMENT
+   ========================= */
 
 html,
 body,
@@ -9,8 +19,45 @@ body,
   min-height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* =========================
+   BODY
+   ========================= */
+
 body {
-  font-family: Arial, sans-serif;
+  margin: 0;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
   background: #f5f7fa;
-  color: #222;
+  color: #1e293b;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================
+   BUTTONS & FORM ELEMENTS
+   ========================= */
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* =========================
+   IMAGES
+   ========================= */
+
+img {
+  max-width: 100%;
+  display: block;
 }

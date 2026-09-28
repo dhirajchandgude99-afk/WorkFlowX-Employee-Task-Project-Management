@@ -372,7 +372,7 @@ function Tasks() {
 
     const normalizedStatus = status
       .toLowerCase()
-      .replace(/\s+/g, '-')
+      .replace(/[\s_]+/g, '-')
 
     return `task-status ${normalizedStatus}`
   }

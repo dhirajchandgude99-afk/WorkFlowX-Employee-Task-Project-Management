@@ -3,11 +3,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px;
   background: linear-gradient(135deg, #0f172a, #1e3a8a);
 }
 
 .login-card {
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   padding: 40px;
   background: #f8fafc;
   border-radius: 16px;
@@ -16,7 +18,7 @@
 
 .login-card h1 {
   text-align: center;
-  margin-bottom: 10px;
+  margin: 0 0 10px;
   color: #1e3a8a;
   font-size: 32px;
   font-weight: 700;
@@ -26,7 +28,7 @@
 .login-card > p {
   text-align: center;
   color: #64748b;
-  margin-bottom: 30px;
+  margin: 0 0 30px;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -38,6 +40,7 @@
 .form-group label {
   display: block;
   margin-bottom: 8px;
+  color: #334155;
   font-weight: 600;
 }
 
@@ -53,12 +56,21 @@
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.form-group input::placeholder {
+  color: #94a3b8;
+}
+
 .form-group input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.login-card button {
+.form-group input:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.login-button {
   width: 100%;
   padding: 13px;
   border: none;
@@ -71,10 +83,17 @@
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.login-card button:hover {
+.login-button:hover:not(:disabled) {
   background: #1d4ed8;
   transform: translateY(-1px);
 }
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .password-input {
   position: relative;
   display: flex;
@@ -88,47 +107,60 @@
 .password-toggle {
   position: absolute;
   right: 10px;
-  width: auto !important;
-  padding: 5px 8px !important;
-  background: transparent !important;
-  color: #2563eb !important;
-  font-size: 14px !important;
+  width: auto;
+  padding: 5px 8px;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.password-toggle:hover {
-  color: #1d4ed8 !important;
-  background: transparent !important;
-  transform: none !important;
-}
-.login-error {
-  margin: -15px 0 20px;
-  color: #dc2626 !important;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: left !important;
-}
-.login-error {
-  color: #dc2626;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  padding: 10px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  margin-bottom: 18px;
+.password-toggle:hover:not(:disabled) {
+  color: #1d4ed8;
+  background: transparent;
 }
 
-.login-card button:disabled {
-  opacity: 0.7;
+.password-toggle:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
+
+.login-error {
+  margin: -8px 0 18px;
+  padding: 10px 12px;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+
 .login-expiry-message {
   margin-bottom: 16px;
   padding: 10px 14px;
+  border: 1px solid #fde68a;
   border-radius: 6px;
   background: #fef3c7;
   color: #92400e;
   font-size: 14px;
   font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 16px;
+  }
+
+  .login-card {
+    padding: 30px 24px;
+    border-radius: 12px;
+  }
+
+  .login-card h1 {
+    font-size: 28px;
+  }
 }

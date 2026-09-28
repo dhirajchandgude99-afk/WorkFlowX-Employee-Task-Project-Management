@@ -294,13 +294,14 @@ function Users() {
               </label>
 
               <input
-                id="username"
-                name="username"
-                type="text"
-                placeholder="Enter username"
-                value={formData.username}
-                onChange={handleChange}
-              />
+               id="username"
+               name="username"
+               type="text"
+               placeholder="Enter username"
+               value={formData.username}
+               onChange={handleChange}
+               autoComplete="username"
+             />
             </div>
 
             <div className="user-form-group">
@@ -311,17 +312,22 @@ function Users() {
               </label>
 
               <input
-                id="password"
-                name="password"
-                type="password"
-                placeholder={
-                  editingUser
-                    ? 'Leave blank to keep current password'
-                    : 'Enter password'
-                }
-                value={formData.password}
-                onChange={handleChange}
-              />
+              id="password"
+              name="password"
+              type="password"
+              placeholder={
+                editingUser
+                ? 'Leave blank to keep current password'
+               : 'Enter password'
+             }
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete={
+              editingUser
+              ? 'new-password'
+              : 'new-password'
+            }
+           />
             </div>
 
             <div className="user-form-group">
@@ -404,7 +410,13 @@ function Users() {
                       </td>
 
                       <td>
-                        <span className="user-role-badge">
+                        <span
+                        className={`user-role-badge ${
+                         user.role?.toLowerCase() === 'admin'
+                          ? 'admin'
+                            : 'user'
+                             }`}
+                             >
                           {user.role}
                         </span>
                       </td>

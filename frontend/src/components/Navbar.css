@@ -183,3 +183,160 @@
     font-size: 12px;
   }
 }
+/* =========================
+   LOGOUT CONFIRMATION MODAL
+   ========================= */
+
+.logout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.logout-modal {
+  width: 100%;
+  max-width: 400px;
+
+  padding: 28px;
+
+  background: #ffffff;
+  border-radius: 12px;
+
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+
+  text-align: center;
+
+  animation: logoutModalIn 0.2s ease-out;
+}
+
+.logout-modal-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 16px;
+
+  border-radius: 50%;
+
+  background: #dbeafe;
+  color: #1e3a8a;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.logout-modal h2 {
+  margin: 0 0 10px;
+
+  color: #1e293b;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.logout-modal p {
+  margin: 0 0 24px;
+
+  color: #64748b;
+
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.logout-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.logout-cancel-button,
+.logout-confirm-button {
+  min-width: 100px;
+
+  padding: 9px 16px;
+
+  border-radius: 7px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.logout-cancel-button {
+  border: 1px solid #cbd5e1;
+
+  background: #ffffff;
+  color: #334155;
+}
+
+.logout-cancel-button:hover {
+  background: #f1f5f9;
+}
+
+.logout-confirm-button {
+  border: none;
+
+  background: #1e3a8a;
+  color: #ffffff;
+}
+
+.logout-confirm-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.logout-cancel-button:active,
+.logout-confirm-button:active {
+  transform: translateY(0);
+}
+
+.logout-cancel-button:focus-visible,
+.logout-confirm-button:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.35);
+  outline-offset: 2px;
+}
+
+@keyframes logoutModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .logout-modal {
+    max-width: 340px;
+    padding: 24px 20px;
+  }
+
+  .logout-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .logout-cancel-button,
+  .logout-confirm-button {
+    width: 100%;
+  }
+}

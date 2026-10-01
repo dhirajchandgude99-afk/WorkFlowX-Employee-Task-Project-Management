@@ -179,6 +179,16 @@ function Login() {
           </button>
 
         </form>
+         <p className="signup-link">
+            Don't have an account?{' '}
+            <button
+             type="button"
+               onClick={() => navigate('/signup')}
+             disabled={loading}
+              >
+          Create Account
+         </button>
+        </p>
 
         {loading && (
           <Loading message="Authenticating..." />

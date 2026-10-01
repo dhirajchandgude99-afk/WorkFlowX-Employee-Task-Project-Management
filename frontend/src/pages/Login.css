@@ -164,3 +164,28 @@
     font-size: 28px;
   }
 }
+.signup-link {
+  margin: 20px 0 0;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.signup-link button {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.signup-link button:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.signup-link button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

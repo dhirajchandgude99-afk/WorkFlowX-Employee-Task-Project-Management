@@ -6,7 +6,7 @@ import Users from '../pages/Users'
 import Employees from '../pages/Employees'
 import Projects from '../pages/Projects'
 import Tasks from '../pages/Tasks'
-
+import Signup from '../pages/Signup'
 import ProtectedRoute from './ProtectedRoute'
 import RoleProtectedRoute from './RoleProtectedRoute'
 import MainLayout from '../layouts/MainLayout'
@@ -25,6 +25,10 @@ function AppRoutes() {
           path="/login"
           element={<Login />}
         />
+          <Route
+            path="/signup"
+            element={<Signup />}
+           />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>

@@ -99,4 +99,22 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+    @ExceptionHandler(DuplicateResourceException.class)
+public ResponseEntity<ErrorResponse> handleDuplicateResourceException(
+        DuplicateResourceException ex,
+        WebRequest request) {
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getDescription(false)
+    );
+
+    return new ResponseEntity<>(
+            errorResponse,
+            HttpStatus.CONFLICT
+    );
+   }
 }

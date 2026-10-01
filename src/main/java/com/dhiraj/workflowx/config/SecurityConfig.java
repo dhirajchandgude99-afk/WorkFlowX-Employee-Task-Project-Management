@@ -68,10 +68,11 @@ public class SecurityConfig {
 
                 // Public APIs
                 .requestMatchers(
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/api/auth/login"
-                ).permitAll()
+                  "/swagger-ui/**",
+                   "/v3/api-docs/**",
+                  "/api/auth/login",
+                  "/api/auth/signup"
+                  ).permitAll()
 
                 // ADMIN-only APIs
                 .requestMatchers("/api/users/**")

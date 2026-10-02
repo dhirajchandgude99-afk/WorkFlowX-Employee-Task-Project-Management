@@ -30,25 +30,24 @@ const handleResponse = async (response) => {
   ========================================
   */
   if (response.status === 401) {
-    logout()
+  logout()
 
-    localStorage.setItem(
-      'authMessage',
-      'Your session has expired. Please log in again.'
-    )
+  localStorage.setItem(
+    'authMessage',
+    'Your session has expired. Please log in again.'
+  )
 
-    window.location.href = '/login'
+  window.location.href = '/login'
 
-    const error = new Error(
-      'Your session has expired. Please log in again.'
-    )
+  const error = new Error(
+    'Your session has expired. Please log in again.'
+  )
 
-    error.status = 401
-    error.data = data
+  error.status = 401
+  error.data = data
 
-    throw error
-  }
-
+  throw error
+}
   /*
   ========================================
   Other API Errors

@@ -54,6 +54,11 @@ function Signup() {
       setError('Passwords do not match.')
       return
     }
+    
+    if (formData.password.length < 6) {
+     setError('Password must be at least 6 characters.')
+     return
+    }
 
     setError('')
     setSuccess('')

@@ -7,6 +7,7 @@ import {
   getProjects,
   getTasks,
 } from '../services/api'
+import { isAdmin } from '../utils/auth'
 import './Dashboard.css'
 
 function Dashboard() {
@@ -19,6 +20,12 @@ function Dashboard() {
   const [error, setError] = useState('')
 
   // =========================
+  // USER ROLE
+  // =========================
+
+  const admin = isAdmin()
+
+  // =========================
   // FETCH DASHBOARD DATA
   // =========================
 
@@ -28,30 +35,40 @@ function Dashboard() {
       setError('')
 
       const [
-        usersData,
         employeesData,
         projectsData,
         tasksData,
       ] = await Promise.all([
-        getUsers(),
         getEmployees(),
         getProjects(),
         getTasks(),
       ])
 
-      setUsers(usersData || [])
       setEmployees(employeesData || [])
       setProjects(projectsData || [])
       setTasks(tasksData || [])
+
+      // Only ADMIN can access /api/users
+      if (admin) {
+        const usersData = await getUsers()
+        setUsers(usersData || [])
+      } else {
+        setUsers([])
+      }
+
     } catch (error) {
       console.error(
         'Failed to fetch dashboard data:',
         error
       )
 
-      if (error.status === 401 || error.status === 403) {
+      if (error.status === 401) {
         setError(
-          'You are not authorized to view dashboard statistics.'
+          'Your session has expired. Please log in again.'
+        )
+      } else if (error.status === 403) {
+        setError(
+          'You do not have permission to view this information.'
         )
       } else {
         setError(
@@ -152,22 +169,26 @@ function Dashboard() {
         <Loading message="Loading dashboard..." />
       ) : (
         <>
+
           {/* =========================
               STAT CARDS
           ========================= */}
 
           <div className="dashboard-stat-grid">
 
-            <div className="dashboard-stat-card">
-              <div className="dashboard-stat-icon">
-                👥
-              </div>
+            {/* ADMIN ONLY */}
+            {admin && (
+              <div className="dashboard-stat-card">
+                <div className="dashboard-stat-icon">
+                  👥
+                </div>
 
-              <div>
-                <h3>Total Users</h3>
-                <p>{users.length}</p>
+                <div>
+                  <h3>Total Users</h3>
+                  <p>{users.length}</p>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="dashboard-stat-card">
               <div className="dashboard-stat-icon">
@@ -283,15 +304,24 @@ function Dashboard() {
           <div className="dashboard-section">
 
             <div className="dashboard-section-header">
-              <h2>System Summary</h2>
+              <h2>
+                {admin
+                  ? 'System Summary'
+                  : 'My Workspace Summary'}
+              </h2>
             </div>
 
             <div className="dashboard-summary-list">
 
-              <div className="dashboard-summary-row">
-                <span>Users</span>
-                <strong>{users.length}</strong>
-              </div>
+              {/* ADMIN ONLY */}
+              {admin && (
+                <div className="dashboard-summary-row">
+                  <span>Users</span>
+                  <strong>
+                    {users.length}
+                  </strong>
+                </div>
+              )}
 
               <div className="dashboard-summary-row">
                 <span>Employees</span>
@@ -309,7 +339,9 @@ function Dashboard() {
 
               <div className="dashboard-summary-row">
                 <span>Tasks</span>
-                <strong>{tasks.length}</strong>
+                <strong>
+                  {tasks.length}
+                </strong>
               </div>
 
             </div>

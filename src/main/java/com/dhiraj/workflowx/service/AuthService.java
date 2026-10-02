@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dhiraj.workflowx.dto.SignupRequestDTO;
 import com.dhiraj.workflowx.entity.Employee;
 import com.dhiraj.workflowx.entity.User;
+import com.dhiraj.workflowx.exception.DuplicateResourceException;
 import com.dhiraj.workflowx.repository.EmployeeRepository;
 import com.dhiraj.workflowx.repository.UserRepository;
 
@@ -31,14 +32,14 @@ public class AuthService {
     public void signup(SignupRequestDTO request) {
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new IllegalArgumentException(
-                    "Username is already registered"
+            throw new DuplicateResourceException(
+                    "Username already exists"
             );
         }
 
         if (employeeRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalArgumentException(
-                    "Email is already registered"
+            throw new DuplicateResourceException(
+                    "Email already exists"
             );
         }
 

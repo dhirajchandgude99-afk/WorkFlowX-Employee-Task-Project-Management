@@ -48,6 +48,18 @@ const handleResponse = async (response) => {
 
   throw error
 }
+// 403 = User is authenticated but does not have permission
+if (response.status === 403) {
+
+  const error = new Error(
+    'You do not have permission to access this resource.'
+  )
+
+  error.status = 403
+  error.data = data
+
+  throw error
+}
   /*
   ========================================
   Other API Errors

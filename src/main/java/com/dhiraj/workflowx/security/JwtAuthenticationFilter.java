@@ -35,7 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException {
-                
 
         final String authHeader =
                 request.getHeader("Authorization");
@@ -50,76 +49,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
 
             final String jwt =
-        authHeader.substring(7);
+                    authHeader.substring(7);
 
-final String username =
-        jwtService.extractUsername(jwt);
+            final String username =
+                    jwtService.extractUsername(jwt);
 
-System.out.println(
-        "JWT username extracted: " + username
-);
+            if (username != null &&
+                    SecurityContextHolder
+                            .getContext()
+                            .getAuthentication() == null) {
 
-if (username != null &&
-        SecurityContextHolder
-                .getContext()
-                .getAuthentication() == null) {
+                UserDetails userDetails =
+                        userDetailsService
+                                .loadUserByUsername(username);
 
-    UserDetails userDetails =
-            userDetailsService
-                    .loadUserByUsername(username);
+                boolean valid =
+                        jwtService.isTokenValid(
+                                jwt,
+                                userDetails
+                        );
 
-    boolean valid = jwtService.isTokenValid(
-            jwt,
-            userDetails
-    );
+                if (valid) {
 
-    System.out.println(
-            "JWT validation result: " + valid
-            + " | username: " + userDetails.getUsername()
-    );
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
 
-    if (valid) {
+                    authentication.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
 
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-
-        authentication.setDetails(
-                new WebAuthenticationDetailsSource()
-                        .buildDetails(request)
-        );
-
-        SecurityContextHolder
-                .getContext()
-                .setAuthentication(authentication);
-                System.err.println(
-        "AUTHENTICATION SET: "
-        + SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-);
-
-System.err.println(
-        "AUTHORITIES: "
-        + SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getAuthorities()
-);
-    }
-}
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(authentication);
+                }
+            }
 
         } catch (io.jsonwebtoken.JwtException |
-        IllegalArgumentException e) {
+                 IllegalArgumentException e) {
 
-                // Invalid JWT → continue without authentication.
-        // Spring Security will return 401 for protected endpoints.
-                }
+            /*
+             * Invalid JWT → continue without authentication.
+             *
+             * Spring Security will handle the request
+             * according to the configured security rules.
+             */
+        }
 
         filterChain.doFilter(request, response);
-
     }
 }

@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
+
 import EmptyState from '../components/EmptyState'
+
 import Loading from '../components/Loading'
+
 import ErrorMessage from '../components/ErrorMessage'
+
 import {
   getEmployees,
   createEmployee,
@@ -9,6 +13,9 @@ import {
   deleteEmployee,
   getUsers,
 } from '../services/api'
+
+import { isAdmin } from '../utils/auth'
+
 import './Employees.css'
 
 function Employees() {
@@ -72,9 +79,19 @@ function Employees() {
   /*
    * FETCH USERS
    *
-   * Needed because Employee requires userId.
+   * Only ADMIN users are allowed to access
+   * /api/users.
+   *
+   * Normal USER accounts should not call
+   * this API because SecurityConfig protects
+   * /api/users/** with ROLE_ADMIN.
    */
   const fetchUsers = async () => {
+    if (!isAdmin()) {
+      setUsers([])
+      return
+    }
+
     try {
       const data = await getUsers()
 
@@ -346,6 +363,7 @@ function Employees() {
 
         <div>
           <h1>Employees</h1>
+
           <p>
             Manage WorkflowX employees
           </p>
@@ -384,14 +402,17 @@ function Employees() {
 
       {/* ADD / EDIT FORM */}
       {showForm && (
+
         <div className="employee-form-card">
 
           <div className="employee-form-header">
+
             <h2>
               {editingEmployee
                 ? 'Edit Employee'
                 : 'Add Employee'}
             </h2>
+
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -546,19 +567,24 @@ function Employees() {
           </form>
 
         </div>
+
       )}
 
       {/* EMPLOYEE TABLE */}
       <div className="employees-card">
 
         {loading ? (
+
           <Loading message="Loading employees..." />
+
         ) : (
+
           <div className="table-container">
 
             <table className="employees-table">
 
               <thead>
+
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
@@ -567,6 +593,7 @@ function Employees() {
                   <th>User ID</th>
                   <th>Actions</th>
                 </tr>
+
               </thead>
 
               <tbody>
@@ -575,6 +602,7 @@ function Employees() {
 
                   filteredEmployees.map(
                     (employee) => (
+
                       <tr key={employee.id}>
 
                         <td className="employee-name">
@@ -630,6 +658,7 @@ function Employees() {
                         </td>
 
                       </tr>
+
                     )
                   )
 
@@ -666,6 +695,7 @@ function Employees() {
             </table>
 
           </div>
+
         )}
 
       </div>

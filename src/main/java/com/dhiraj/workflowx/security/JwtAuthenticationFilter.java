@@ -94,6 +94,13 @@ System.out.println("BEARER TOKEN PRESENT: " +
                     SecurityContextHolder
                             .getContext()
                             .setAuthentication(authentication);
+                            System.out.println("JWT AUTHENTICATED USER: " +
+        SecurityContextHolder.getContext()
+                .getAuthentication().getName());
+
+System.out.println("JWT AUTHORITIES: " +
+        SecurityContextHolder.getContext()
+                .getAuthentication().getAuthorities());
                 }
             }
 

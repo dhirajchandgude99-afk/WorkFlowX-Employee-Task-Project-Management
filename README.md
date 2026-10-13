@@ -12,6 +12,11 @@ WorkflowX is designed to provide a centralized system for managing employees, pr
 
 The application follows a layered backend architecture using Spring Boot and provides a React frontend for interacting with the backend APIs.
 
+## 🌐 Live Demo
+
+- **Frontend:** https://workflowx-frontend.onrender.com
+- **Backend:** https://workflowx-employee-task-project.onrender.com
+- **Swagger API Documentation:** https://workflowx-employee-task-project.onrender.com/swagger-ui/index.html                               - **Note:** The application is deployed for demonstration purposes. Backend availability may depend on the hosting service's status and      plan.
 ### Main capabilities
 
 * User authentication using JWT
